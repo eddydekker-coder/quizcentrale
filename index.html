@@ -255,6 +255,9 @@ th.curcol{color:var(--ink)}
 .sq{font-size:1.08rem;font-weight:600;overflow-wrap:anywhere}
 .sa{margin-top:4px;color:var(--good);font-weight:700;font-size:1.05rem;overflow-wrap:anywhere}
 .sa.hide,.sf.hide{filter:blur(6px);user-select:none}
+.script-round.veiled .veil{filter:blur(8px);user-select:none;pointer-events:none;transition:filter .2s}
+.script-round .veil{transition:filter .2s}
+.script-round.veiled{border-style:dashed}
 .sm{margin-top:4px;font-size:.82rem;color:var(--muted)}
 .sf{margin-top:6px;font-size:.92rem;background:var(--banana-soft);border-radius:6px;padding:6px 10px;overflow-wrap:anywhere}
 .sf b{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;margin-right:6px;color:var(--warn)}
@@ -342,6 +345,9 @@ const DEFAULT_MSG='Hoi {contact}! Leuk dat je met je team meedoet aan {quiz} op 
 /* ---------- state ---------- */
 const S={mode:'loading',readOnly:false,quizzes:{},questions:{},sheets:{},venues:{},types:null,ready:false};
 const ui={qt:{captain:'',players:'',phone:'',email:''},view:'home',quizId:null,tab:'programma',bank:{kind:'blad',q:'',type:'',tag:'',diff:'',usage:'',limit:80},standAfter:null,readOrder:false,hideAnswers:false,modal:null};
+function revKey(){ return 'qc-reveal-'+(ui.quizId||''); }
+function getRev(){ try{ return JSON.parse(localStorage.getItem(revKey())||'{}')||{}; }catch(e){ return ui._rev||{}; } }
+function setRev(o){ ui._rev=o; try{ localStorage.setItem(revKey(),JSON.stringify(o)); }catch(e){} }
 const SB_URL='https://hdzciyhnysdjafrrnfuu.supabase.co';
 const SB_KEY='sb_publishable_-XhHCIi-BQWIfCUOzJvK4A_MFLkdy4l';
 const BUCKET='bladen';
@@ -731,9 +737,10 @@ function tabStand(q){
 
 function tabScript(q){
   const rs=q.rounds||[]; if(!rs.length) return '<p class="muted">Nog geen rondes in het programma.</p>';
-  const U=usage(); const hid=ui.hideAnswers?'hide':'';
-  return `<div class="spread"><p class="muted" style="max-width:60ch">Je spiekbriefje voor de microfoon${q.host?', '+esc(q.host):''}. Open dit op je telefoon of tablet tijdens de quiz.</p>
-    <label class="check"><input id="hide-ans" type="checkbox" data-ui="hideAnswers" ${ui.hideAnswers?'checked':''}> Antwoorden vervagen</label></div>
+  const U=usage(); const hid=ui.hideAnswers?'hide':''; const REV=getRev();
+  return `<div class="spread"><p class="muted" style="max-width:60ch">Je spiekbriefje voor de microfoon${q.host?', '+esc(q.host):''}. Open dit op je telefoon of tablet tijdens de quiz. Vragen blijven vervaagd tot je een ronde zichtbaar maakt.</p>
+    <div class="row" style="align-items:center"><label class="check"><input id="hide-ans" type="checkbox" data-ui="hideAnswers" ${ui.hideAnswers?'checked':''}> Antwoorden vervagen</label>
+    <button class="btn btn-sm" data-a="revealAll" data-v="1">Alles tonen</button><button class="btn btn-sm" data-a="revealAll" data-v="0">Alles vervagen</button></div></div>
   ${rs.map((r,i)=>{ const t=typeOf(r.typeId); const isBlad=isSheet(r.typeId); const lst=isList(r.typeId); const qc=num(r.qCount)||0; const items=[]; let headExtra='',opdracht='';
     if(isBlad){ const sh=S.sheets[r.sheetId]; const its=sheetItems(sh);
       headExtra=`<div class="row" style="align-items:flex-end">${sh&&sh.pdf?`<button class="btn btn-banana" data-a="viewSheetPdf" data-id="${sh.id}">Blad tonen</button>`:''}<label class="field" style="min-width:220px"><span>${lst?'Lijstvraag':'Vragenblad'}</span>${sheetSelect(r,'ss-'+r.id,U)}</label></div>`;
@@ -746,9 +753,10 @@ function tabScript(q){
       for(let k=0;k<Math.max(qc,ids.length);k++){ const qq=S.questions[ids[k]];
         items.push(qq?`<li><div><div class="sq">${esc(qq.prompt)}</div><div class="sa ${hid}">${esc(qq.answer)}</div>${qq.fact?`<div class="sf ${hid}"><b>Feitje</b>${esc(qq.fact)}</div>`:''}${qq.media||qq.notes?`<div class="sm">${esc([qq.media,qq.notes].filter(Boolean).join(' · '))}</div>`:''}</div></li>`:`<li class="empty"><div>Nog geen vraag gekozen</div></li>`); }
       headExtra=`<button class="btn btn-sm" data-a="openPicker" data-id="${r.id}">Vragen kiezen</button>`; }
-    const sh=isBlad?S.sheets[r.sheetId]:null;
-    return `<section class="script-round card"><div class="script-head"><div><div class="eyebrow">Ronde ${i+1} · ${esc(t.medium||'')} · max ${fmt(roundMax(r))} pt</div><h2>${esc(r.title)}${sh&&!lst?' · '+esc(sh.name):''}</h2></div>${headExtra}</div>${opdracht}${items.length?`<ol>${items.join('')}</ol>`:''}</section>`; }).join('')}
-  ${q.tiebreak?.question?`<section class="card"><div class="eyebrow">Shoot-out</div><div class="sq" style="margin-top:4px">${esc(q.tiebreak.question)}</div><div class="sa ${hid}">${esc(q.tiebreak.answer??'')}</div></section>`:''}`;
+    const sh=isBlad?S.sheets[r.sheetId]:null; const open=!!REV[r.id];
+    const eye=`<button class="btn btn-sm ${open?'':'btn-primary'}" data-a="toggleReveal" data-id="${r.id}" aria-pressed="${open}">${open?'Vervagen':'Vragen tonen'}</button>`;
+    return `<section class="script-round card ${open?'':'veiled'}"><div class="script-head"><div><div class="eyebrow">Ronde ${i+1} · ${esc(t.medium||'')} · max ${fmt(roundMax(r))} pt</div><h2>${esc(r.title)}${sh&&!lst?' · '+esc(sh.name):''}</h2></div><div class="row" style="align-items:flex-end">${eye}${headExtra}</div></div><div class="veil">${opdracht}${items.length?`<ol>${items.join('')}</ol>`:''}</div></section>`; }).join('')}
+  ${q.tiebreak?.question?`<section class="script-round card ${REV.tiebreak?'':'veiled'}"><div class="spread"><div class="eyebrow">Shoot-out</div><button class="btn btn-sm ${REV.tiebreak?'':'btn-primary'}" data-a="toggleReveal" data-id="tiebreak">${REV.tiebreak?'Vervagen':'Vraag tonen'}</button></div><div class="veil"><div class="sq" style="margin-top:4px">${esc(q.tiebreak.question)}</div><div class="sa ${hid}">${esc(q.tiebreak.answer??'')}</div></div></section>`:''}`;
 }
 
 /* ----- locaties ----- */
@@ -1182,6 +1190,8 @@ const A={
   editMsgTpl(){ const q=curQuiz(); const back=ui.modal&&ui.modal.kind==='msg'?ui.modal:null; openModal({kind:'msgTpl',text:q.msgTemplate||DEFAULT_MSG,returnTo:back}); },
   saveTpl(){ const q=curQuiz(); q.msgTemplate=ui.modal.text; saveQuiz(q); closeModal(); toast('Berichttekst opgeslagen'); },
   /* stand */
+  toggleReveal(el){ const o=getRev(); const id=el.dataset.id; if(o[id]) delete o[id]; else o[id]=true; setRev(o); render(); },
+  revealAll(el){ const q=curQuiz(); const o={}; if(el.dataset.v==='1'){ (q.rounds||[]).forEach(r=>o[r.id]=true); o.tiebreak=true; } setRev(o); render(); },
   readOrder(el){ ui.readOrder=el.dataset.v==='1'; render(); },
   exportStand(el){ const q=curQuiz(); const i=+el.dataset.i; const st=standings(q,i); const rs=q.rounds.slice(0,i+1);
     const lines=[['Positie','Team','Contactpersoon',...rs.map((r,k)=>'R'+(k+1)+' '+r.title),'Totaal','Shoot-out'].map(csvCell).join(';'),...st.map(r=>[r.rank,teamName(r.t),r.t.captain||'',...r.per.map(p=>p==null?'':String(p).replace('.',',')),String(r.total).replace('.',','),r.t.tiebreak??''].map(csvCell).join(';'))];
