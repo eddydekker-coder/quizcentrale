@@ -1,0 +1,1359 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Quizcentrale Blauwe Banaan</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%2219%22 fill=%22%23ffcf3a%22/%3E%3Cpath d=%22M9.5 12.5c1.6 9.8 9.4 16.6 19.6 15 1.8-.3 2.3-1.9 1-2.6-7.1-2.8-12.6-7.7-15-14.6-.6-1.7-5.9-1.6-5.6 2.2z%22 fill=%22%232340d8%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: navy top bar with banana mark, one working column (max 1240px); quiz pages use sub-tabs; programme is a draggable timeline. */
+:root{
+  --bg:#eef1f8; --surface:#ffffff; --surface-2:#f5f7fc; --ink:#141b3c; --muted:#5a6388; --line:#d8deee; --line-2:#c4cce3;
+  --hdr:#121a45; --hdr-ink:#ffffff; --hdr-muted:#aab3dd;
+  --blue:#2340d8; --blue-soft:#e3e8ff; --on-blue:#ffffff;
+  --banana:#ffcf3a; --banana-soft:#fff3c4; --on-banana:#2b2200;
+  --good:#12804f; --good-soft:#dcf3e8; --warn:#9a5c00; --warn-soft:#fdeccd; --bad:#c03636; --bad-soft:#fbe0e0;
+  --c0:#2340d8; --c0s:#e3e8ff; --c1:#7438c9; --c1s:#efe5ff; --c2:#0b766e; --c2s:#d6f2ee; --c3:#b8306f; --c3s:#fce0ed; --c4:#8f5d00; --c4s:#ffefc4; --c5:#2d7a1d; --c5s:#e1f3d8;
+  --shadow:0 1px 2px rgba(20,27,60,.06),0 6px 20px rgba(20,27,60,.06);
+  --f-display:"Bricolage Grotesque","Figtree",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0a0f2c; --surface:#121a42; --surface-2:#18214f; --ink:#e9ecff; --muted:#9aa3cc; --line:#262f68; --line-2:#323c7c;
+  --hdr:#060a22; --hdr-ink:#ffffff; --hdr-muted:#8f98c6;
+  --blue:#8299ff; --blue-soft:#1f2a6a; --on-blue:#0a0f2c;
+  --banana:#ffd54f; --banana-soft:#3a3214; --on-banana:#241c00;
+  --good:#52d49c; --good-soft:#113a2a; --warn:#f2b24e; --warn-soft:#3b2c10; --bad:#ff8080; --bad-soft:#3f1a24;
+  --c0:#93a7ff; --c0s:#1f2a6a; --c1:#c3a2ff; --c1s:#2f1f5c; --c2:#5fd6c9; --c2s:#0f3a3a; --c3:#ff8fc0; --c3s:#47183a; --c4:#f5c75a; --c4s:#3d3012; --c5:#8fdc78; --c5s:#1c3a18;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0a0f2c; --surface:#121a42; --surface-2:#18214f; --ink:#e9ecff; --muted:#9aa3cc; --line:#262f68; --line-2:#323c7c;
+  --hdr:#060a22; --hdr-ink:#ffffff; --hdr-muted:#8f98c6;
+  --blue:#8299ff; --blue-soft:#1f2a6a; --on-blue:#0a0f2c;
+  --banana:#ffd54f; --banana-soft:#3a3214; --on-banana:#241c00;
+  --good:#52d49c; --good-soft:#113a2a; --warn:#f2b24e; --warn-soft:#3b2c10; --bad:#ff8080; --bad-soft:#3f1a24;
+  --c0:#93a7ff; --c0s:#1f2a6a; --c1:#c3a2ff; --c1s:#2f1f5c; --c2:#5fd6c9; --c2s:#0f3a3a; --c3:#ff8fc0; --c3s:#47183a; --c4:#f5c75a; --c4s:#3d3012; --c5:#8fdc78; --c5s:#1c3a18;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+.login{max-width:420px;margin:8vh auto 0;display:flex;flex-direction:column;gap:14px}
+.login .brandbig{display:flex;align-items:center;gap:12px}
+.login .brandbig svg{width:52px;height:52px}
+.userbox{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--hdr-muted)}
+.userbox button{background:none;border:1px solid rgba(255,255,255,.25);color:var(--hdr-ink);border-radius:999px;padding:4px 10px;cursor:pointer;font-weight:600;font-size:.78rem}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--f-display);line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(1.6rem,3.2vw,2.2rem);font-weight:800}
+h2{font-size:1.25rem;font-weight:700}
+h3{font-size:1.02rem;font-weight:700}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.eyebrow{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+
+.top{background:var(--hdr);color:var(--hdr-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.top-in{max-width:1240px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+.brand svg{width:36px;height:36px;flex:none}
+.brand span{display:flex;flex-direction:column;line-height:1.05;text-align:left}
+.brand b{font-family:var(--f-display);font-size:1.15rem;font-weight:800;letter-spacing:-.01em}
+.brand small{color:var(--hdr-muted);font-size:.75rem;font-weight:600}
+.logo-disc{fill:var(--banana)} .logo-ban{fill:#2340d8} .logo-tip{fill:#121a45}
+.nav{display:flex;gap:4px;flex-wrap:wrap}
+.nav button{background:none;border:0;color:var(--hdr-muted);padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:600}
+.nav button:hover{color:var(--hdr-ink)}
+.nav button[aria-current="true"]{background:var(--banana);color:#2b2200}
+.sync{margin-left:auto;font-size:.8rem;color:var(--hdr-muted);display:flex;align-items:center;gap:6px}
+.sync i{width:8px;height:8px;border-radius:50%;background:#52d49c;display:inline-block}
+.sync i.busy{background:#ffcf3a} .sync i.off{background:#ff8080}
+
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:24px 64px;display:flex;flex-direction:column;gap:20px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spread{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:12px}
+
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.9rem;white-space:nowrap}
+.btn:hover{border-color:var(--blue)}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-banana{background:var(--banana);border-color:var(--banana);color:var(--on-banana)}
+.btn-danger{color:var(--bad)} .btn-danger:hover{border-color:var(--bad)}
+.btn-sm{padding:5px 10px;font-size:.82rem}
+.btn-icon{padding:6px;border-radius:7px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.sel{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.card-flat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field>span{font-size:.78rem;font-weight:600;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=email],input[type=tel],input[type=search],select,textarea{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:72px}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 3px var(--blue-soft)}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.fgrid .wide{grid-column:1/-1}
+.check{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.9rem;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--blue)}
+
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font-size:.76rem;font-weight:700;background:var(--surface-2);color:var(--muted);border:1px solid transparent;white-space:nowrap}
+.c0{background:var(--c0s);color:var(--c0)} .c1{background:var(--c1s);color:var(--c1)} .c2{background:var(--c2s);color:var(--c2)} .c3{background:var(--c3s);color:var(--c3)} .c4{background:var(--c4s);color:var(--c4)} .c5{background:var(--c5s);color:var(--c5)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.p-gepland{background:var(--blue-soft);color:var(--blue)} .p-voorbereid{background:var(--good-soft);color:var(--good)} .p-live{background:var(--banana-soft);color:var(--warn)} .p-afgerond{background:var(--surface-2);color:var(--muted)} .p-vervallen{background:var(--bad-soft);color:var(--bad)}
+.qcard.vervallen{opacity:.6}.qcard.vervallen h3{text-decoration:line-through}
+.status-sel{width:auto;font-weight:700;padding:6px 10px}
+.pdfpages{display:flex;flex-direction:column;gap:12px;min-height:200px}.pdfpages canvas,.pdfimg{width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff}
+.toggle.vv{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.tag{background:none;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:2px 9px;font-size:.78rem;cursor:pointer}
+.tag:hover,.tag.sel{border-color:var(--blue);color:var(--blue)}
+.tag.sel{background:var(--blue-soft)}
+.tag b{font-weight:700;margin-left:3px;font-family:var(--f-mono);font-size:.7rem}
+
+.banner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-radius:var(--r)}
+.banner.warn{background:var(--warn-soft)}
+.banner.info{background:var(--blue-soft)}
+.banner p{flex:1;min-width:220px}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.stat b{display:block;font-family:var(--f-display);font-size:1.7rem;font-weight:800;line-height:1.1}
+.stat span{font-size:.8rem;color:var(--muted);font-weight:600}
+.stat small{display:block;color:var(--muted);font-size:.78rem;margin-top:2px}
+
+.qcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.qcard{display:flex;gap:14px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;box-shadow:var(--shadow);width:100%}
+.qcard:hover{border-color:var(--blue)}
+.datebox{flex:none;width:58px;border-radius:8px;background:var(--hdr);color:var(--hdr-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 0}
+.datebox b{font-family:var(--f-display);font-size:1.6rem;line-height:1}
+.datebox span{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:#ffcf3a;font-weight:700}
+.qcard-body{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.qcard-body h3{overflow-wrap:anywhere}
+
+.qhead{display:flex;flex-direction:column;gap:10px}
+.back{background:none;border:0;color:var(--muted);cursor:pointer;padding:0;font-weight:600;font-size:.85rem;align-self:flex-start}
+.back:hover{color:var(--blue)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;cursor:pointer;font-weight:600;color:var(--muted);white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--banana)}
+.tabs button .cnt{font-family:var(--f-mono);font-size:.72rem;background:var(--surface-2);border-radius:999px;padding:1px 7px;margin-left:5px}
+
+/* programma */
+.prog{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.prog{grid-template-columns:minmax(0,1fr)}}
+.tl-row{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px}
+.tl-time{font-family:var(--f-mono);font-weight:700;font-size:.88rem;padding-top:16px;color:var(--muted);text-align:right}
+.tl-mini{font-size:.85rem;color:var(--muted);padding:4px 0 12px}
+.tl-mini .tl-time{padding-top:0}
+.rounds-list{display:flex;flex-direction:column}
+.tl-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px 14px;margin-bottom:8px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.tl-card.cur{border-color:var(--banana);box-shadow:0 0 0 2px var(--banana)}
+.round-item.dragging .tl-card{box-shadow:0 14px 40px rgba(10,15,44,.25);border-color:var(--blue);transform:scale(1.01)}
+.round-item.dragging{position:relative;z-index:5}
+.pause-row{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;margin:-2px 0 8px}
+.pause-row span{font-size:.82rem;font-weight:700;color:var(--warn);background:var(--warn-soft);border-radius:999px;padding:3px 12px;justify-self:start}
+.round-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.round-top input{flex:1;min-width:150px;font-weight:700;font-family:var(--f-display);font-size:1.05rem}
+.drag-h{cursor:grab;touch-action:none;border:1px dashed var(--line-2);background:var(--surface-2);border-radius:7px;padding:6px 5px;color:var(--muted);display:grid;place-items:center}
+.drag-h:active{cursor:grabbing}
+.drag-h svg{width:16px;height:16px}
+.round-nums{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.round-nums .field{width:104px}
+.round-nums .maxp{font-family:var(--f-mono);font-weight:700;padding-bottom:8px}
+.qprog{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;flex:1;min-width:80px}
+.qprog i{display:block;height:100%;background:var(--blue)}
+.sheetpick{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.sheetpick .field{flex:1;min-width:200px}
+.addrounds{display:flex;flex-wrap:wrap;gap:6px}
+.summary-line{display:flex;gap:18px;flex-wrap:wrap;font-size:.9rem}
+.summary-line b{font-family:var(--f-mono)}
+
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table.tbl{border-collapse:collapse;width:100%;font-size:.9rem}
+.tbl th{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;font-weight:700;padding:10px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap;vertical-align:bottom}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.r,.tbl th.r{text-align:right}
+.tbl td.c,.tbl th.c{text-align:center}
+.tbl input[type=number]{width:70px;padding:6px 8px}
+.tbl .tname{font-weight:700}
+.tbl .tname.ph{color:var(--muted);font-weight:600;font-style:italic}
+.tbl tr.dim td{opacity:.55}
+.tbl input.namein{min-width:170px;font-weight:700}
+.toggle{border:1px solid var(--line-2);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--muted);white-space:nowrap}
+.toggle.on{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+
+.score-in{width:64px!important;text-align:right;font-family:var(--f-mono);font-weight:700}
+.score-in.over{border-color:var(--bad);background:var(--bad-soft)}
+.total{font-family:var(--f-mono);font-weight:700;font-size:1rem}
+.rank{font-family:var(--f-display);font-weight:800;font-size:1.05rem}
+.mv{font-size:.75rem;font-weight:700;font-family:var(--f-mono)}
+.mv.up{color:var(--good)} .mv.down{color:var(--bad)} .mv.eq{color:var(--muted)}
+th.curcol,td.curcol{box-shadow:inset 0 3px 0 var(--banana)}
+th.curcol{color:var(--ink)}
+.medal{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;font-weight:800;font-family:var(--f-display)}
+.m1{background:var(--banana);color:#2b2200} .m2{background:var(--line-2);color:var(--ink)} .m3{background:var(--c4s);color:var(--c4)}
+.readout{display:flex;flex-direction:column;gap:8px}
+.readout div{display:grid;grid-template-columns:90px minmax(0,1fr) auto;gap:14px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px}
+.readout .pl{font-family:var(--f-display);font-weight:800;font-size:1.5rem;color:var(--blue)}
+.readout .nm{font-size:1.35rem;font-weight:700;overflow-wrap:anywhere}
+.readout .pt{font-family:var(--f-mono);font-size:1.2rem;font-weight:700}
+.readout div.top3{background:var(--banana-soft);border-color:var(--banana)}
+
+.filters{display:grid;grid-template-columns:minmax(0,2fr) repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.filters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.filters .fs{grid-column:1/-1}}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.seg button{border:0;background:none;padding:7px 14px;border-radius:7px;font-weight:700;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.tagcloud{display:flex;flex-wrap:wrap;gap:6px}
+.qlist{display:flex;flex-direction:column;gap:8px}
+.qrow{display:flex;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;align-items:flex-start}
+.qrow-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.qrow-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.8rem}
+.qp{font-weight:600;overflow-wrap:anywhere}
+.qp.big{font-family:var(--f-display);font-size:1.1rem;font-weight:700}
+.qa{color:var(--muted);font-size:.9rem;overflow-wrap:anywhere}
+.qa span{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-right:6px;color:var(--good)}
+.qrow-act{display:flex;gap:4px;flex:none}
+.diff{display:inline-flex;gap:2px}
+.diff i{width:7px;height:7px;border-radius:50%;background:var(--line-2)}
+.diff i.f{background:var(--banana)}
+.use{color:var(--muted)} .use.warn{color:var(--warn);font-weight:700}
+.typestrip{display:flex;gap:8px;flex-wrap:wrap}
+.typestrip button{cursor:pointer}
+.typestrip button.sel{border-color:currentColor}
+
+.script-round{display:flex;flex-direction:column;gap:10px}
+.script-round ol{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px;counter-reset:q}
+.script-round li{display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:12px;counter-increment:q}
+.script-round li::before{content:counter(q);font-family:var(--f-display);font-weight:800;font-size:1.3rem;color:var(--blue)}
+.script-round li.empty{border-style:dashed;color:var(--muted);background:transparent}
+.listedit{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}
+.listans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;margin:0;padding:0;list-style:none}
+@media (max-width:560px){.listans,.listedit{grid-template-columns:minmax(0,1fr)}}
+.listans li{display:flex;gap:10px;align-items:baseline;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-weight:700;color:var(--good);font-size:1.05rem;overflow-wrap:anywhere}
+.listans li::before{content:'';width:14px;height:14px;flex:none;border:2px solid var(--line-2);border-radius:4px;align-self:center}
+.listans li.hide span{filter:blur(6px)}
+.listq{font-family:var(--f-display);font-size:1.35rem;font-weight:700;line-height:1.25;background:var(--banana-soft);border-radius:8px;padding:12px 14px}
+.opdracht{background:var(--banana-soft);border-radius:8px;padding:10px 12px;font-weight:600}
+.sq{font-size:1.08rem;font-weight:600;overflow-wrap:anywhere}
+.sa{margin-top:4px;color:var(--good);font-weight:700;font-size:1.05rem;overflow-wrap:anywhere}
+.sa.hide,.sf.hide{filter:blur(6px);user-select:none}
+.sm{margin-top:4px;font-size:.82rem;color:var(--muted)}
+.sf{margin-top:6px;font-size:.92rem;background:var(--banana-soft);border-radius:6px;padding:6px 10px;overflow-wrap:anywhere}
+.sf b{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;margin-right:6px;color:var(--warn)}
+.qf{font-size:.85rem;color:var(--muted);overflow-wrap:anywhere}.qf b{font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;margin-right:6px;color:var(--warn)}
+.script-head{display:flex;gap:10px;justify-content:space-between;align-items:flex-end;flex-wrap:wrap}
+
+.scrim{position:fixed;inset:0;background:rgba(6,10,34,.55);z-index:50;display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px;overflow-y:auto}
+.modal{background:var(--surface);border-radius:14px;width:100%;max-width:640px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;max-height:90vh}
+.modal.wide{max-width:900px}
+.modal-h{padding:18px 20px 10px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.modal-b{padding:6px 20px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.modal-f{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
+.modal-f .grow{flex:1;color:var(--muted);font-size:.85rem}
+.pick{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.pick:hover{border-color:var(--blue)}
+.pick.on{border-color:var(--blue);background:var(--blue-soft)}
+.pick input{margin-top:3px;width:18px;height:18px;accent-color:var(--blue);flex:none}
+.pick div{min-width:0}
+.items{display:flex;flex-direction:column;gap:6px}
+.item-row{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(0,1fr) 34px;gap:6px;align-items:center}
+.item-row b{font-family:var(--f-mono);color:var(--muted);text-align:right;font-size:.85rem}
+.item-head{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+@media (max-width:560px){.item-row{grid-template-columns:22px minmax(0,1fr) 34px}.item-row .ip{grid-column:2}.item-row .ia{grid-column:2}.item-row .btn{grid-row:1/span 2;grid-column:3}.item-row b{grid-row:1/span 2}.item-head{display:none}}
+pre.out{white-space:pre-wrap;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:12px;font-family:var(--f-body);margin:0;overflow-wrap:anywhere}
+details.paste summary{cursor:pointer;font-weight:600;font-size:.88rem;color:var(--blue)}
+details.paste[open]{background:var(--surface-2);border-radius:8px;padding:10px}
+details.paste .stack{margin-top:8px}
+
+.empty{text-align:center;padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.empty p{max-width:52ch;color:var(--muted)}
+
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--hdr);color:var(--hdr-ink);padding:10px 16px;border-radius:10px;font-weight:600;font-size:.9rem;z-index:200;box-shadow:0 8px 30px rgba(0,0,0,.3);max-width:calc(100vw - 32px)}
+#toast.bad{background:var(--bad);color:#fff}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+<div id="modal-root"></div>
+<div id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<script>
+'use strict';
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const num=v=>(v===''||v==null||isNaN(+v))?null:+v;
+const fmt=n=>n==null?'–':String(Math.round(n*100)/100).replace('.',',');
+const money=n=>'€ '+(Math.round((n||0)*100)/100).toFixed(2).replace('.',',');
+function fmtDate(d,o){ if(!d) return 'Datum nog onbekend'; const dt=new Date(d+'T12:00:00'); if(isNaN(dt)) return d; return dt.toLocaleDateString('nl-NL',o||{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+function addMin(hhmm,min){ const [h,m]=(hhmm||'20:00').split(':').map(Number); const t=(h||0)*60+(m||0)+min; return String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(((t%60)+60)%60).padStart(2,'0'); }
+function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function splitTags(s){ return [...new Set(String(s||'').split(/[,;#]/).map(t=>t.trim().toLowerCase()).filter(Boolean))]; }
+
+const LOGO=`<svg viewBox="0 0 40 40" aria-hidden="true"><circle class="logo-disc" cx="20" cy="20" r="19"/><path class="logo-ban" d="M9.5 12.5c1.6 9.8 9.4 16.6 19.6 15 1.8-.3 2.3-1.9 1-2.6-7.1-2.8-12.6-7.7-15-14.6-.6-1.7-5.9-1.6-5.6 2.2z"/><path class="logo-tip" d="M9.4 12.4c-.3-1.6.4-2.6 1.6-2.9l.6 2.3z"/></svg>`;
+const I={
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+  del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+  grip:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
+  dl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+  up2:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7 10l5-5 5 5M5 20h14"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+};
+
+/* format: 'los' = losse vragen uit de bank; 'blad' = een vragenblad met naam (bijv. Hoofdsteden) */
+const DEFAULT_TYPES=[
+  {id:'grabbelton',name:'Grabbelton',format:'los',desc:'10 willekeurige kennisvragen',q:10,pts:1,dur:15,medium:'Microfoon',promptLabel:'Vraag',answerLabel:'Antwoord',color:0},
+  {id:'ai',name:'AI-ronde',format:'blad',desc:'10 AI-gegenereerde plaatjes die cryptisch iets uitbeelden',q:10,pts:1,dur:15,medium:'Vragenblad',promptLabel:'Plaatje (omschrijving)',answerLabel:'Oplossing',color:1},
+  {id:'missinglink',name:'The Missing Link',format:'blad',desc:'10 × 4 woorden die iets met elkaar te maken hebben',q:10,pts:1,dur:15,medium:'Vragenblad',promptLabel:'De 4 woorden',answerLabel:'De link',color:2},
+  {id:'lijstjes',name:'Lijstjesronde',format:'lijst',desc:'1 vraag met 10 antwoorden, de volgorde maakt niet uit',q:10,pts:1,dur:15,medium:'Microfoon',promptLabel:'Vraag',answerLabel:'Antwoord',color:5},
+  {id:'muziek',name:'Muziekronde',format:'blad',desc:'10 nummers: artiest of titel goed is 0,5 punt, allebei goed is 1 punt',q:10,pts:1,dur:20,medium:'Speaker',promptLabel:'Fragment (track of tijdstip)',answerLabel:'Artiest – titel',color:3},
+  {id:'foto',name:'Fotoronde',format:'blad',desc:'10 plaatjes van iets: raad wat het is',q:10,pts:1,dur:15,medium:'Vragenblad',promptLabel:'Foto (omschrijving)',answerLabel:'Antwoord',color:4},
+];
+const FORMAT_FALLBACK={grabbelton:'los'};
+const STATUSES=[['gepland','Gepland'],['voorbereid','Voorbereid'],['live','Live'],['afgerond','Afgerond'],['vervallen','Vervallen']];
+const statusLabel=s=>(STATUSES.find(x=>x[0]===s)||STATUSES[0])[1];
+const DEFAULT_MSG='Hoi {contact}! Leuk dat je met je team meedoet aan {quiz} op {datum}. We beginnen om {tijd} bij {locatie}. Jullie zijn met {spelers} personen; de kosten zijn {prijs} p.p. ({totaal} in totaal). Bedenk alvast een mooie teamnaam. Tot dan!';
+
+/* ---------- state ---------- */
+const S={mode:'loading',readOnly:false,quizzes:{},questions:{},sheets:{},venues:{},types:null,ready:false};
+const ui={qt:{captain:'',players:'',phone:'',email:''},view:'home',quizId:null,tab:'programma',bank:{kind:'blad',q:'',type:'',tag:'',diff:'',usage:'',limit:80},standAfter:null,readOrder:false,hideAnswers:false,modal:null};
+const SB_URL='https://hdzciyhnysdjafrrnfuu.supabase.co';
+const SB_KEY='sb_publishable_-XhHCIi-BQWIfCUOzJvK4A_MFLkdy4l';
+const BUCKET='bladen';
+let sb=null,session=null,rtChannel=null;
+const ui_login={email:'',sent:false,busy:false,err:''};
+const PDFJS_BASE='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/';
+function loadScript(src){ return new Promise((res,rej)=>{ const sc=document.createElement('script'); sc.src=src; sc.onload=res; sc.onerror=rej; document.head.appendChild(sc); }); }
+let pdfjsP=null;
+function loadPdfJs(){ if(!pdfjsP) pdfjsP=(async()=>{ if(!window.pdfjsLib) await loadScript(PDFJS_BASE+'pdf.min.js'); if(!window.pdfjsWorker) await loadScript(PDFJS_BASE+'pdf.worker.min.js'); const lib=window.pdfjsLib; if(!lib) throw new Error('pdfjs'); lib.GlobalWorkerOptions.workerSrc=PDFJS_BASE+'pdf.worker.min.js'; return lib; })().catch(e=>{ pdfjsP=null; throw e; }); return pdfjsP; }
+async function fileUrl(f){ if(!f||!f.path||!sb) return ''; const {data,error}=await sb.storage.from(BUCKET).createSignedUrl(f.path,3600); if(error) throw error; return data.signedUrl; }
+function fmtSize(b){ b=num(b)||0; return b>1048576?(b/1048576).toFixed(1).replace('.',',')+' MB':Math.max(1,Math.round(b/1024))+' kB'; }
+const LS_KEY='bbq-quizcentrale-v1';
+const dirty={},ver={},timers={},inflight={};
+
+function types(){ return S.types||DEFAULT_TYPES; }
+function typeOf(id){ return types().find(t=>t.id===id)||{id,name:id||'Onbekend',color:5,promptLabel:'Vraag',answerLabel:'Antwoord',desc:'',medium:'',format:'los'}; }
+function formatOf(id){ const t=types().find(x=>x.id===id); if(t&&t.format) return t.format; const d=DEFAULT_TYPES.find(x=>x.id===id); if(d) return d.format; if(t&&/lijst/i.test(t.name||'')) return 'lijst'; return FORMAT_FALLBACK[id]||'los'; }
+function isSheet(id){ const f=formatOf(id); return f==='blad'||f==='lijst'; }
+function isList(id){ return formatOf(id)==='lijst'; }
+function typeChip(id){ const t=typeOf(id); return `<span class="chip c${(t.color??5)%6}">${esc(t.name)}</span>`; }
+function teamName(t){ return (t&&t.name&&String(t.name).trim())||(t&&t.captain?'Team van '+t.captain:'Naamloos team'); }
+
+/* ---------- storage ---------- */
+function lsLoad(){ try{ const raw=localStorage.getItem(LS_KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; } }
+function lsSave(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({quizzes:S.quizzes,questions:S.questions,sheets:S.sheets,venues:S.venues,types:S.types})); }catch(e){ toast('Opslaan op dit apparaat lukt niet: de browseropslag is geblokkeerd.','bad'); } }
+function useLocal(){
+  S.mode='local'; S.readOnly=false;
+  const d=lsLoad();
+  if(d){ S.quizzes=d.quizzes||{}; S.questions=d.questions||{}; S.sheets=d.sheets||{}; S.venues=d.venues||{}; S.types=d.types||null; }
+  if(!S.types) S.types=clone(DEFAULT_TYPES);
+  S.ready=true; render();
+}
+window.addEventListener('storage',e=>{
+  if(S.mode!=='local'||e.key!==LS_KEY) return;
+  const d=lsLoad(); if(!d) return;
+  for(const col of ['quizzes','questions','sheets','venues']){ const nq=d[col]||{};
+    for(const id of Object.keys(S[col])) if(!nq[id]&&!dirty[col+'/'+id]) delete S[col][id];
+    for(const [id,q] of Object.entries(nq)) if(!dirty[col+'/'+id]) S[col][id]=q; }
+  if(d.types) S.types=d.types; softRender();
+});
+let pendingRender=false;
+function editingInApp(){ const a=document.activeElement; return !!(a&&a!==document.body&&$('#app').contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)); }
+function softRender(){ if(S.ready&&editingInApp()){ pendingRender=true; return; } pendingRender=false; render(); }
+document.addEventListener('focusout',()=>{ setTimeout(()=>{ if(pendingRender&&!editingInApp()){ pendingRender=false; renderSafe(); } },0); });
+function applyChanges(snap,col,map){
+  for(const ch of snap.docChanges()){
+    const id=ch.doc.id; if(dirty[col+'/'+id]) continue;
+    if(ch.type==='removed') delete map[id];
+    else { const d=ch.doc.data(); if(d) map[id]=Object.assign(clone(d),{id}); }
+  }
+}
+async function boot(){
+  render();
+  if(!window.supabase||!window.supabase.createClient){ useLocal(); toast('De verbinding met de database kon niet worden geladen. Je werkt nu alleen op dit apparaat.','bad'); return; }
+  sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit'}});
+  const {data}=await sb.auth.getSession(); session=data.session;
+  sb.auth.onAuthStateChange((ev,sess)=>{ const had=!!session; session=sess;
+    if(sess&&!had){ startData(); }
+    if(!sess&&had){ location.reload(); } });
+  if(!session){ S.mode='login'; render(); return; }
+  startData();
+}
+let dataStarted=false;
+async function startData(){
+  if(dataStarted) return; dataStarted=true;
+  S.mode='cloud'; render();
+  try{
+    const rows=[]; let from=0;
+    for(;;){ const {data,error}=await sb.from('docs').select('col,id,data').order('col').order('id').range(from,from+999); if(error) throw error; rows.push(...data); if(data.length<1000) break; from+=1000; }
+    S.quizzes={}; S.questions={}; S.sheets={}; S.venues={}; S.types=null;
+    for(const r of rows) applyRow(r);
+    if(!S.types) S.types=clone(DEFAULT_TYPES);
+    S.ready=true; render();
+  }catch(e){ console.error(e); S.ready=true; S.loadError=true; render(); toast('Gegevens laden mislukt. Herlaad de pagina.','bad'); return; }
+  rtChannel=sb.channel('docs-wijzigingen').on('postgres_changes',{event:'*',schema:'public',table:'docs'},p=>{
+    if(p.eventType==='DELETE'){ const o=p.old||{}; if(!o.col||dirty[o.col+'/'+o.id]) return; if(S[o.col]&&o.col!=='settings') delete S[o.col][o.id]; softRender(); return; }
+    const r=p.new; if(!r||dirty[r.col+'/'+r.id]) return; applyRow(r); softRender();
+  }).subscribe();
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&S.mode==='cloud') refreshAll(); });
+}
+function applyRow(r){
+  if(r.col==='settings'){ if(r.id==='types'&&!dirty['settings/types']){ const d=r.data; S.types=d&&Array.isArray(d.list)&&d.list.length?clone(d.list):clone(DEFAULT_TYPES); } return; }
+  if(!['quizzes','questions','sheets','venues'].includes(r.col)) return;
+  S[r.col][r.id]=Object.assign(clone(r.data||{}),{id:r.id});
+}
+let refreshBusy=false;
+async function refreshAll(){
+  if(refreshBusy||!sb) return; refreshBusy=true;
+  try{ const rows=[]; let from=0; for(;;){ const {data,error}=await sb.from('docs').select('col,id,data').range(from,from+999); if(error) throw error; rows.push(...data); if(data.length<1000) break; from+=1000; }
+    const seen={}; for(const r of rows){ seen[r.col+'/'+r.id]=1; if(!dirty[r.col+'/'+r.id]) applyRow(r); }
+    for(const col of ['quizzes','questions','sheets','venues']) for(const id of Object.keys(S[col])) if(!seen[col+'/'+id]&&!dirty[col+'/'+id]) delete S[col][id];
+    softRender(); }catch(e){} refreshBusy=false;
+}
+function onDbErr(){ toast('Verbinding met de database weggevallen. Herlaad de pagina.','bad'); }
+function persist(path,delay=450){
+  if(S.readOnly){ toast('Je hebt alleen leesrechten. Maak een kopie op dit apparaat om zelf te beheren.','bad'); return false; }
+  dirty[path]=true; ver[path]=(ver[path]||0)+1;
+  clearTimeout(timers[path]); timers[path]=setTimeout(()=>flush(path),delay);
+  setSync(); return true;
+}
+function bodyFor(path){
+  const [col,id]=path.split('/');
+  if(col==='quizzes'||col==='questions'||col==='sheets'||col==='venues'){ const x=S[col][id]; if(!x) return null; const b=clone(x); delete b.id; return b; }
+  if(path==='settings/types') return {list:clone(types())};
+  return null;
+}
+async function flush(path,retry){
+  if(inflight[path]){ clearTimeout(timers[path]); timers[path]=setTimeout(()=>flush(path),200); return; }
+  const v=ver[path]; inflight[path]=true;
+  try{
+    if(S.mode==='cloud'){ const [col,id]=path.split('/'); const b=bodyFor(path);
+      const res=b==null?await sb.from('docs').delete().eq('col',col).eq('id',id):await sb.from('docs').upsert({col,id,data:b,updated_at:new Date().toISOString()});
+      if(res.error) throw Object.assign(new Error(res.error.message),{code:res.error.code||'db'}); }
+    else lsSave();
+  }catch(e){
+    inflight[path]=false;
+    const code=e&&e.code;
+    console.error(e);
+    if(!retry){ setTimeout(()=>flush(path,true),800+Math.random()*800); return; }
+    if(code==='42501'||code==='PGRST301') toast('Je bent uitgelogd of hebt geen rechten. Log opnieuw in.','bad');
+    else toast('Opslaan mislukt. Controleer je internetverbinding; de app probeert het bij de volgende wijziging opnieuw.','bad');
+  }
+  inflight[path]=false;
+  if(ver[path]===v) dirty[path]=false;
+  setSync();
+}
+function setSync(){ const el=$('#sync'); if(el) el.innerHTML=syncLabel(); }
+function syncLabel(){
+  if(S.mode==='loading') return '<i class="busy"></i>Laden…';
+  const busy=Object.values(dirty).some(Boolean);
+  if(S.mode==='login') return '';
+  if(S.mode==='local') return `<i class="${busy?'busy':''}"></i>${busy?'Opslaan…':'Op dit apparaat'}`;
+  return `<i class="${busy?'busy':''}"></i>${busy?'Opslaan…':'Opgeslagen'}`;
+}
+function saveQuiz(q,delay){ return persist('quizzes/'+q.id,delay); }
+async function writeMany(paths){
+  for(const p of paths){ dirty[p]=true; ver[p]=(ver[p]||0)+1; } setSync();
+  if(S.mode!=='cloud'){ for(const p of paths){ await flush(p); } return; }
+  const rows=paths.map(p=>{ const [col,id]=p.split('/'); return {col,id,data:bodyFor(p),updated_at:new Date().toISOString()}; }).filter(r=>r.data!=null);
+  try{ for(let i=0;i<rows.length;i+=100){ const {error}=await sb.from('docs').upsert(rows.slice(i,i+100)); if(error) throw error; } }
+  catch(e){ console.error(e); toast('Opslaan van een deel van de gegevens mislukt. Probeer het opnieuw.','bad'); }
+  for(const p of paths) dirty[p]=false; setSync();
+}
+
+/* ---------- derived ---------- */
+function curQuiz(){ return S.quizzes[ui.quizId]; }
+function activeTeams(q){ return (q.teams||[]).filter(t=>t.status!=='wachtlijst'&&t.status!=='afgemeld'); }
+function teamOrder(a,b){ const x=num(a.table),y=num(b.table); if(x!=null&&y!=null&&x!==y) return x-y; if(x!=null&&y==null) return -1; if(y!=null&&x==null) return 1; return teamName(a).localeCompare(teamName(b),'nl'); }
+function roundMax(r){ return (num(r.qCount)||0)*(num(r.pts)||0); }
+function rawScore(q,t,r){ return num(q.scores?.[t.id]?.[r.id]); }
+function standings(q,upto){
+  const rs=(q.rounds||[]).slice(0,upto+1);
+  const soA=num(q.tiebreak?.answer); const isFinal=upto===(q.rounds||[]).length-1;
+  const rows=activeTeams(q).map(t=>{ let total=0; const per=rs.map(r=>{ const p=rawScore(q,t,r); if(p!=null) total+=p; return p; });
+    const d=(soA!=null&&num(t.tiebreak)!=null)?Math.abs(num(t.tiebreak)-soA):null; return {t,per,total,d}; });
+  const cmp=(a,b)=>(b.total-a.total)||((isFinal&&soA!=null)?((a.d??1e15)-(b.d??1e15)):0);
+  rows.sort((a,b)=>cmp(a,b)||teamName(a.t).localeCompare(teamName(b.t),'nl'));
+  rows.forEach((row,i)=>{ row.rank=(i>0&&cmp(rows[i-1],row)===0)?rows[i-1].rank:i+1;
+    row.soUsed=isFinal&&soA!=null&&((i>0&&rows[i-1].total===row.total)||(i<rows.length-1&&rows[i+1].total===row.total)); });
+  return rows;
+}
+function lastScoredIdx(q){ let k=-1; const ts=activeTeams(q); (q.rounds||[]).forEach((r,i)=>{ if(ts.some(t=>rawScore(q,t,r)!=null)) k=i; }); return k; }
+function usage(){ const qm={},sm={}; for(const q of Object.values(S.quizzes)) for(const r of (q.rounds||[])){
+    if(isSheet(r.typeId)){ if(r.sheetId) (sm[r.sheetId]=sm[r.sheetId]||[]).push({quizId:q.id,name:q.name,date:q.date,roundId:r.id}); }
+    else for(const id of (r.questionIds||[])) (qm[id]=qm[id]||[]).push({quizId:q.id,name:q.name,date:q.date,roundId:r.id}); }
+  return {q:qm,s:sm}; }
+function schedule(q){ let t=num(q.introMin)||0; const out=[]; for(const r of (q.rounds||[])){ const st=t; t+=(num(r.dur)||0); const pauseAt=t; t+=(num(r.breakAfter)||0); out.push({start:addMin(q.start,st),pause:addMin(q.start,pauseAt)}); } return {rounds:out,end:addMin(q.start,t)}; }
+function sheetItems(sh){ return (sh&&sh.items||[]).filter(it=>String(it.a||'').trim()||String(it.p||'').trim()); }
+function roundFilled(r){ if(isSheet(r.typeId)){ const sh=S.sheets[r.sheetId]; return sh?sheetItems(sh).length:0; } return (r.questionIds||[]).length; }
+
+/* ---------- render ---------- */
+function captureFocus(){ const a=document.activeElement; if(a&&a.id&&a!==document.body&&$('#app').contains(a)){ let s=null,e=null; try{ s=a.selectionStart; e=a.selectionEnd; }catch(x){} return {id:a.id,s,e}; } return null; }
+function restoreFocus(f){ if(!f) return; const el=document.getElementById(f.id); if(!el) return; el.focus({preventScroll:true}); try{ if(f.s!=null) el.setSelectionRange(f.s,f.e); }catch(x){} }
+function render(){
+  deferredRender=false;
+  const f=captureFocus();
+  if(S.mode==='login'){ $('#app').innerHTML=loginView(); restoreFocus(f); return; }
+  $('#app').innerHTML=header()+`<main class="wrap">${banner()}${!S.ready?loadingView():view()}</main>`;
+  restoreFocus(f);
+}
+function header(){
+  const nb=(v,l)=>`<button data-a="nav" data-v="${v}" aria-current="${(ui.view===v||(v==='home'&&ui.view==='quiz'))?'true':'false'}">${l}</button>`;
+  return `<header class="top"><div class="top-in">
+    <button class="brand" data-a="nav" data-v="home">${LOGO}<span><b>Quizcentrale</b><small>De Blauwe Banaan Pubquiz</small></span></button>
+    <nav class="nav" aria-label="Hoofdmenu">${nb('home','Quizavonden')}${nb('venues','Locaties')}${nb('bank','Vragenbank')}${nb('types','Rondetypes')}</nav>
+    <div class="sync" id="sync">${syncLabel()}</div>${session?`<div class="userbox"><span>${esc(session.user.email||'')}</span><button data-a="logout">Uitloggen</button></div>`:''}</div></header>`;
+}
+function banner(){
+  if(S.loadError) return `<div class="banner warn"><p><b>De gegevens konden niet worden geladen.</b> Controleer je internetverbinding en herlaad de pagina.</p></div>`;
+  if(S.mode==='cloud'&&S.ready&&!Object.keys(S.quizzes).length&&!Object.keys(S.questions).length&&!Object.keys(S.sheets).length&&!Object.keys(S.venues).length)
+    return `<div class="banner info"><p><b>De database is nog leeg.</b> Heb je een back-up uit de vorige Quizcentrale? Zet die hier terug, dan staat alles er weer in.</p><button class="btn btn-sm btn-primary" data-a="importQ">Back-up terugzetten</button></div>`;
+  if(S.mode==='local'&&S.ready) return `<div class="banner info"><p><b>Je gegevens staan op dit apparaat.</b> De gedeelde database is hier niet beschikbaar, dus alles wordt in deze browser bewaard. Maak af en toe een back-up via de Vragenbank.</p></div>`;
+  if(S.readOnly&&S.ready) return `<div class="banner warn"><p><b>Je kunt hier alleen meekijken.</b> Vraag de eigenaar om je als bewerker uit te nodigen, of maak een kopie op dit apparaat en beheer de quiz zelf.</p><button class="btn btn-sm" data-a="goLocal">Kopie op dit apparaat maken</button></div>`;
+  return '';
+}
+function loginView(){
+  const L=ui_login;
+  return `<main class="wrap"><div class="login card">
+    <div class="brandbig">${LOGO}<div><h1 style="font-size:1.6rem">Quizcentrale</h1><p class="muted">De Blauwe Banaan Pubquiz</p></div></div>
+    ${L.sent?`<div class="banner info"><p><b>Check je mail.</b> We hebben een inloglink gestuurd naar ${esc(L.email)}. Klik op de link in die mail om in te loggen. Je blijft daarna op dit apparaat ingelogd.</p></div>
+      <button class="btn" data-a="loginAgain">Ander e-mailadres of opnieuw sturen</button>`
+    :`<p>Log in met je e-mailadres. Je krijgt een link per mail, een wachtwoord is niet nodig.</p>
+    <form data-form="login" class="stack"><label class="field"><span>E-mailadres</span><input id="login-email" type="email" data-lg="email" value="${esc(L.email)}" autocomplete="email" required autofocus></label>
+      ${L.err?`<p class="small" style="color:var(--bad)">${esc(L.err)}</p>`:''}
+      <button class="btn btn-primary" type="submit" ${L.busy?'disabled':''} style="justify-content:center">${L.busy?'Bezig…':'Stuur inloglink'}</button></form>
+    <p class="small muted">Alleen uitgenodigde e-mailadressen kunnen inloggen.</p>`}
+  </div></main>`;
+}
+function loadingView(){ return `<div class="empty">${LOGO.replace('<svg','<svg style="width:56px;height:56px"')}<p>Quizcentrale laden…</p></div>`; }
+function view(){
+  if(ui.view==='quiz') return viewQuiz();
+  if(ui.view==='bank') return viewBank();
+  if(ui.view==='types') return viewTypes();
+  if(ui.view==='venues') return viewVenues();
+  return viewHome();
+}
+
+/* ----- home ----- */
+function viewHome(){
+  const qs=Object.values(S.quizzes).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const today=todayISO();
+  const up=qs.filter(q=>q.status==='live'||(!['afgerond','vervallen'].includes(q.status)&&(!q.date||q.date>=today)));
+  const cancelled=qs.filter(q=>q.status==='vervallen'&&(!q.date||q.date>=today));
+  const past=qs.filter(q=>!up.includes(q)&&!cancelled.includes(q)).reverse();
+  const U=usage(); const nQ=Object.keys(S.questions).length; const nS=Object.keys(S.sheets).length;
+  const unusedS=Object.keys(S.sheets).filter(id=>!U.s[id]).length;
+  const teamsSeason=qs.reduce((s,q)=>s+activeTeams(q).length,0);
+  if(!qs.length&&!nQ&&!nS) return `<div class="card empty">${LOGO.replace('<svg','<svg style="width:72px;height:72px"')}
+    <h1>Welkom bij de Quizcentrale</h1>
+    <p>Plan hier je quizavonden, schrijf teams in, vul scores in en houd de stand bij. Alle vragen en vragenbladen bewaar je met tags in de vragenbank.</p>
+    <div class="row" style="justify-content:center"><button class="btn btn-primary" data-a="newQuiz">${I.plus}Nieuwe quizavond</button></div></div>`;
+  const card=q=>{ const d=q.date?new Date(q.date+'T12:00:00'):null; const at=activeTeams(q).length;
+    return `<button class="qcard ${q.status==='vervallen'?'vervallen':''}" data-a="openQuiz" data-id="${q.id}">
+      <div class="datebox"><b>${d?d.getDate():'?'}</b><span>${d?d.toLocaleDateString('nl-NL',{month:'short'}).replace('.',''):'—'}</span></div>
+      <div class="qcard-body"><div class="row" style="justify-content:space-between"><h3>${esc(q.name||'Naamloze quiz')}</h3><span class="pill p-${q.status||'gepland'}">${esc(statusLabel(q.status))}</span></div>
+      <span class="muted small">${esc(fmtDate(q.date,{weekday:'long',day:'numeric',month:'long'}))} · ${esc(q.start||'')}${q.venue?' · '+esc(venueLabel(q)):''}</span>
+      <span class="small"><b class="num">${at}</b>${q.maxTeams?'/'+esc(q.maxTeams):''} teams · ${(q.rounds||[]).length} rondes${q.host?' · host '+esc(q.host):''}</span></div></button>`; };
+  return `<div class="spread"><div><div class="eyebrow">Overzicht</div><h1>Quizavonden</h1></div>
+      <div class="row"><button class="btn btn-primary" data-a="newQuiz">${I.plus}Nieuwe quizavond</button></div></div>
+    <div class="stats">
+      <div class="stat"><span>Komende avonden</span><b class="num">${up.length}</b></div>
+      <div class="stat"><span>Vragenbladen</span><b class="num">${nS}</b><small>${unusedS} nog niet gespeeld</small></div>
+      <div class="stat"><span>Losse vragen</span><b class="num">${nQ}</b><small>${Object.keys(S.questions).filter(id=>!U.q[id]).length} nog niet gesteld</small></div>
+      <div class="stat"><span>Teams dit seizoen</span><b class="num">${teamsSeason}</b></div>
+    </div>
+    ${homeUnplanned()}
+    <section class="stack"><h2>Gepland</h2>${up.length?`<div class="qcards">${up.map(card).join('')}</div>`:'<p class="muted">Geen geplande quizavonden. Maak er een aan met de knop hierboven.</p>'}</section>
+    ${cancelled.length?`<section class="stack"><h2>Vervallen</h2><div class="qcards">${cancelled.map(card).join('')}</div></section>`:''}
+    ${past.length?`<section class="stack"><h2>Eerder gespeeld</h2><div class="qcards">${past.map(card).join('')}</div></section>`:''}`;
+}
+
+/* ----- quiz ----- */
+function viewQuiz(){
+  const q=curQuiz(); if(!q){ ui.view='home'; return viewHome(); }
+  const nT=(q.teams||[]).filter(t=>t.status!=='afgemeld').length;
+  const tabs=[['programma','Programma'],['teams','Teams',nT],['scores','Scores'],['stand','Stand'],['script','Quizmaster-script']];
+  let body='';
+  if(ui.tab==='teams') body=tabTeams(q); else if(ui.tab==='scores') body=tabScores(q); else if(ui.tab==='stand') body=tabStand(q);
+  else if(ui.tab==='script') body=tabScript(q); else body=tabProgramma(q);
+  return `<div class="qhead"><button class="back" data-a="nav" data-v="home">← Alle quizavonden</button>
+    <div class="spread"><div class="stack" style="gap:6px"><div class="row"><label class="row small muted" style="gap:6px">Status <select id="qh-status" class="status-sel" data-q="status">${STATUSES.map(([k,l])=>`<option value="${k}" ${(q.status||'gepland')===k?'selected':''}>${l}</option>`).join('')}</select></label><span class="pill p-${q.status||'gepland'}">${esc(statusLabel(q.status))}</span></div>
+      <h1>${esc(q.name||'Naamloze quiz')}</h1><p class="muted">${esc(fmtDate(q.date,{weekday:'long',day:'numeric',month:'long',year:'numeric'}))} · ${esc(q.start||'')}${q.venue?' · '+esc(venueLabel(q)):''}${q.host?' · host: <b>'+esc(q.host)+'</b>':''}</p></div>
+      <div class="row"><button class="btn" data-a="dupQuiz">${I.copy}Dupliceren</button><button class="btn btn-danger" data-a="askDelQuiz">${I.del}Verwijderen</button></div></div>
+    <div class="tabs" role="tablist">${tabs.map(([k,l,c])=>`<button role="tab" aria-selected="${ui.tab===k}" data-a="tab" data-v="${k}">${l}${c!=null?`<span class="cnt">${c}</span>`:''}</button>`).join('')}</div></div>${body}`;
+}
+function sheetSelect(r,id,U){
+  const opts=Object.values(S.sheets).filter(s=>s.typeId===r.typeId).sort((a,b)=>(a.name||'').localeCompare(b.name||'','nl'));
+  return `<select id="${id}" data-r="${r.id}.sheetId" aria-label="Vragenblad"><option value="">— kies een vragenblad —</option>${opts.map(s=>{ const u=(U.s[s.id]||[]).filter(x=>x.roundId!==r.id); const n=sheetItems(s).length;
+    return `<option value="${s.id}" ${r.sheetId===s.id?'selected':''}>${esc(s.name)} (${n})${u.length?' · al gespeeld: '+u.map(x=>fmtDate(x.date,{day:'numeric',month:'short'})).join(', '):''}</option>`; }).join('')}</select>`;
+}
+function pauseSelect(r){ return `<input id="rb-${r.id}" type="number" min="0" step="1" list="pause-opts" data-r="${r.id}.breakAfter" value="${esc(num(r.breakAfter)||0)}" title="0 = geen pauze">`; }
+function tabProgramma(q){
+  const sch=schedule(q); const total=(q.rounds||[]).reduce((s,r)=>s+roundMax(r),0); const totalQ=(q.rounds||[]).reduce((s,r)=>s+(num(r.qCount)||0),0);
+  const U=usage();
+  const f=(k,l,type='text',extra='')=>`<label class="field"><span>${l}</span><input id="qf-${k}" type="${type}" data-q="${k}" value="${esc(q[k]??'')}" ${extra}></label>`;
+  const rounds=(q.rounds||[]).map((r,i)=>{ const t=typeOf(r.typeId); const isBlad=isSheet(r.typeId); const lst=isList(r.typeId); const n=roundFilled(r); const qc=num(r.qCount)||0; const pz=num(r.breakAfter)||0;
+    const content=isBlad
+      ?`<div class="sheetpick"><label class="field"><span>${lst?'Lijstvraag':'Vragenblad'}</span>${sheetSelect(r,'rs-'+r.id,U)}</label><button class="btn btn-sm" data-a="newSheetForRound" data-id="${r.id}">${I.plus}${lst?'Nieuwe lijstvraag':'Nieuw blad'}</button>${r.sheetId&&S.sheets[r.sheetId]?`<button class="btn btn-sm" data-a="editSheet" data-id="${r.sheetId}">${I.edit}${lst?'Bewerken':'Blad bewerken'}</button>`:''}${S.sheets[r.sheetId]&&S.sheets[r.sheetId].pdf?`<button class="btn btn-sm btn-banana" data-a="viewSheetPdf" data-id="${r.sheetId}">Blad tonen</button>`:''}</div>`
+      :`<div class="row"><span class="small muted">${esc(t.medium||'')}</span><div class="qprog" title="${n} van ${qc} vragen gekozen"><i style="width:${qc?Math.min(100,n/qc*100):0}%"></i></div><span class="small num">${n}/${qc}</span><button class="btn btn-sm" data-a="openPicker" data-id="${r.id}">Vragen kiezen</button></div>`;
+    return `<div class="round-item" data-rid="${r.id}"><div class="tl-row"><div class="tl-time">${sch.rounds[i].start}</div><div class="tl-card ${q.currentRound===r.id?'cur':''}">
+      <div class="round-top"><button class="drag-h" title="Sleep om te verplaatsen (of gebruik pijltjestoetsen)" aria-label="Ronde ${i+1} verplaatsen" data-rid="${r.id}">${I.grip}</button><span class="eyebrow">Ronde ${i+1}</span>${typeChip(r.typeId)}<input id="rt-${r.id}" type="text" data-r="${r.id}.title" value="${esc(r.title)}" aria-label="Rondenaam">
+        <button class="btn btn-icon btn-danger" title="Ronde verwijderen" aria-label="Ronde verwijderen" data-a="askDelRound" data-id="${r.id}">${I.del}</button></div>
+      <div class="round-nums">
+        <label class="field"><span>Vragen</span><input id="rq-${r.id}" type="number" min="1" data-r="${r.id}.qCount" value="${esc(r.qCount)}"></label>
+        <label class="field"><span>Punten/vraag</span><input id="rp-${r.id}" type="number" min="0" step="0.5" data-r="${r.id}.pts" value="${esc(r.pts)}"></label>
+        <label class="field"><span>Speeltijd (min)</span><input id="rd-${r.id}" type="number" min="0" data-r="${r.id}.dur" value="${esc(r.dur)}"></label>
+        <label class="field"><span>Pauze erna (min)</span>${pauseSelect(r)}</label>
+        <span class="maxp">max ${fmt(roundMax(r))} pt</span></div>
+      ${content}
+    </div></div>${pz&&i<q.rounds.length-1?`<div class="pause-row"><div class="tl-time" style="padding-top:3px">${sch.rounds[i].pause}</div><span>Pauze · ${pz} min</span></div>`:''}</div>`; }).join('');
+  return `<div class="prog">
+    <section class="card stack"><h2>Gegevens</h2><div class="fgrid">
+      <div class="wide">${f('name','Naam van de avond')}</div>
+      ${f('date','Datum','date')}${f('start','Aanvang','time')}
+      <div class="wide">${venueField(q)}</div>
+      <div class="wide">${f('host','Host / quizmaster','text','placeholder="Naam van de host"')}</div>
+      ${f('price','Prijs p.p. (€)','number','min="0" step="0.5"')}${f('maxTeams','Max. teams','number','min="1"')}
+      ${f('maxTeamSize','Max. spelers per team','number','min="1"')}${f('introMin','Inloop & uitleg (min)','number','min="0"')}
+    </div>
+    <h3 style="margin-top:6px">Shoot-out</h3>
+    <p class="small muted">Benaderingsvraag die beslist bij een gelijke eindstand: het team dat het dichtst bij het juiste getal zit, wint.</p>
+    <div class="fgrid"><label class="field wide"><span>Vraag</span><input id="qf-soq" type="text" data-q="tiebreak.question" value="${esc(q.tiebreak?.question||'')}" placeholder="Hoeveel treden telt de Domtoren?"></label>
+      <label class="field"><span>Juiste antwoord</span><input id="qf-soa" type="number" step="any" data-q="tiebreak.answer" value="${esc(q.tiebreak?.answer??'')}"></label></div>
+    </section>
+    <section class="stack"><div class="spread"><h2>Programma</h2><div class="summary-line"><span><b>${(q.rounds||[]).length}</b> rondes</span><span><b>${totalQ}</b> vragen</span><span>max <b>${fmt(total)}</b> punten</span></div></div>
+      <p class="small muted" style="margin-top:-6px">Sleep een ronde aan het bolletjesgreepje om de volgorde te wijzigen.</p>
+      <div>
+        <div class="tl-row tl-mini"><div class="tl-time">${esc(q.start||'')}</div><div>Inloop en uitleg</div></div>
+        <datalist id="pause-opts"><option value="0"></option><option value="5"></option><option value="10"></option><option value="15"></option><option value="20"></option></datalist>
+        <div class="rounds-list" id="rounds-list">${rounds||'<p class="muted">Nog geen rondes. Voeg ze hieronder toe.</p>'}</div>
+        <div class="tl-row tl-mini"><div class="tl-time">${sch.end}</div><div>Shoot-out, eindstand en prijsuitreiking</div></div>
+      </div>
+      <div class="card-flat stack"><span class="eyebrow">Ronde toevoegen</span><div class="addrounds">${types().map(t=>`<button class="btn btn-sm" data-a="addRound" data-id="${t.id}">${I.plus}${esc(t.name)}</button>`).join('')}</div></div>
+    </section></div>`;
+}
+
+function tabTeams(q){
+  const all=(q.teams||[]).slice().sort((a,b)=>{ const o={ingeschreven:0,wachtlijst:1,afgemeld:2}; return (o[a.status]??0)-(o[b.status]??0)||teamOrder(a,b); });
+  const act=activeTeams(q); const players=act.reduce((s,t)=>s+(num(t.players)||0),0);
+  const price=num(q.price)||0; const due=players*price; const paid=act.filter(t=>t.paid).reduce((s,t)=>s+(num(t.players)||0)*price,0);
+  const wait=(q.teams||[]).filter(t=>t.status==='wachtlijst').length; const inn=act.filter(t=>t.checkedIn).length; const named=act.filter(t=>t.name&&String(t.name).trim()).length;
+  const maxSize=num(q.maxTeamSize);
+  const rows=all.map(t=>`<tr class="${t.status==='afgemeld'?'dim':''}">
+    <td><input id="tt-${t.id}" type="number" min="0" data-t="${t.id}.table" value="${esc(t.table??'')}" aria-label="Tafel" style="width:58px"></td>
+    <td><div class="tname">${esc(t.captain||'—')}</div><div class="small muted">${esc([t.phone,t.email].filter(Boolean).join(' · '))}${t.notes?(t.phone||t.email?' · ':'')+esc(t.notes):''}</div></td>
+    <td><input class="namein" id="tn-${t.id}" type="text" data-t="${t.id}.name" value="${esc(t.name||'')}" placeholder="Bedenken ze ter plekke" aria-label="Teamnaam"></td>
+    <td><input id="tp-${t.id}" type="number" min="1" data-t="${t.id}.players" value="${esc(t.players??'')}" aria-label="Spelers" style="width:58px;${maxSize&&num(t.players)>maxSize?'border-color:var(--bad)':''}"></td>
+    <td><select id="ts-${t.id}" data-t="${t.id}.status" aria-label="Status">${['ingeschreven','wachtlijst','afgemeld'].map(s=>`<option ${t.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
+    <td><button class="toggle ${t.paid?'on':''}" data-a="tgl" data-id="${t.id}" data-k="paid">${t.paid?'Betaald':'Open'}</button></td>
+    <td><button class="toggle ${t.checkedIn?'on':''}" data-a="tgl" data-id="${t.id}" data-k="checkedIn">${t.checkedIn?'Binnen':'Nog niet'}</button></td>
+    <td class="r"><div class="row" style="gap:2px;justify-content:flex-end;flex-wrap:nowrap"><button class="btn btn-icon" title="Bevestigingsbericht" aria-label="Bevestigingsbericht" data-a="teamMsg" data-id="${t.id}">${I.copy}</button><button class="btn btn-icon" title="Bewerken" aria-label="Bewerken" data-a="editTeam" data-id="${t.id}">${I.edit}</button><button class="btn btn-icon btn-danger" title="Verwijderen" aria-label="Verwijderen" data-a="askDelTeam" data-id="${t.id}">${I.del}</button></div></td></tr>`).join('');
+  return `<div class="stats">
+    <div class="stat"><span>Aanmeldingen</span><b class="num">${act.length}${q.maxTeams?'<span class="muted" style="font-size:1rem">/'+esc(q.maxTeams)+'</span>':''}</b><small>${wait} op de wachtlijst</small></div>
+    <div class="stat"><span>Spelers</span><b class="num">${players}</b><small>max ${esc(q.maxTeamSize||'–')} per team</small></div>
+    <div class="stat"><span>Betaald</span><b class="num">${money(paid)}</b><small>van ${money(due)} verwacht</small></div>
+    <div class="stat"><span>Ingecheckt</span><b class="num">${inn}/${act.length}</b><small>${named} met teamnaam</small></div></div>
+  <form class="card-flat row" data-form="quickTeam" style="align-items:flex-end">
+    <label class="field" style="flex:2;min-width:180px"><span>Contactpersoon</span><input id="nt-cap" type="text" name="captain" data-qt="captain" value="${esc(ui.qt.captain)}" placeholder="Naam van wie aanmeldt"></label>
+    <label class="field" style="width:90px"><span>Spelers</span><input id="nt-pl" type="number" name="players" min="1" data-qt="players" value="${esc(ui.qt.players||q.maxTeamSize||4)}"></label>
+    <label class="field" style="flex:1.2;min-width:140px"><span>Telefoon</span><input id="nt-ph" type="tel" name="phone" data-qt="phone" value="${esc(ui.qt.phone)}"></label>
+    <label class="field" style="flex:1.4;min-width:160px"><span>E-mail</span><input id="nt-em" type="email" name="email" data-qt="email" value="${esc(ui.qt.email)}"></label>
+    <button class="btn btn-primary" type="submit">${I.plus}Aanmelden</button>
+    <button class="btn" type="button" data-a="importTeams">Lijst plakken</button>
+    <button class="btn" type="button" data-a="editMsgTpl">Berichttekst</button>
+  </form>
+  ${all.length?`<p class="small muted">Teams melden zich aan op naam van een contactpersoon. De teamnaam vul je op de avond zelf in.</p><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Tafel</th><th>Contactpersoon</th><th>Teamnaam</th><th>Spelers</th><th>Status</th><th>Betaling</th><th>Check-in</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
+  :'<p class="muted">Nog geen aanmeldingen. Vul hierboven de naam van de contactpersoon in, of plak een lijst uit WhatsApp of e-mail.</p>'}`;
+}
+
+function tabScores(q){
+  const ts=activeTeams(q).slice().sort(teamOrder); const rs=q.rounds||[];
+  if(!rs.length) return '<p class="muted">Voeg eerst rondes toe in het programma.</p>';
+  if(!ts.length) return '<p class="muted">Meld eerst teams aan.</p>';
+  const st=standings(q,rs.length-1); const rk={}; st.forEach(r=>rk[r.t.id]=r);
+  const head=rs.map((r,i)=>`<th class="r ${q.currentRound===r.id?'curcol':''}" title="${esc(r.title)}">R${i+1} ${esc((r.title||'').slice(0,14))}<br><span style="text-transform:none;letter-spacing:0;font-weight:500">max ${fmt(roundMax(r))}</span></th>`).join('');
+  const body=ts.map((t,ti)=>`<tr><td class="c"><span class="rank">${rk[t.id]?.rank??''}</span></td><td><div class="tname ${t.name?'':'ph'}">${esc(teamName(t))}</div><div class="small muted">${t.table?'Tafel '+esc(t.table):''}</div></td>
+    ${rs.map((r,ri)=>{ const v=rawScore(q,t,r); const over=v!=null&&(v>roundMax(r)||v<0);
+      return `<td class="r ${q.currentRound===r.id?'curcol':''}"><input class="score-in ${over?'over':''}" id="s-${t.id}-${r.id}" data-s="${t.id}|${r.id}" data-row="${ti}" data-col="${ri}" type="number" inputmode="decimal" step="0.5" min="0" max="${roundMax(r)}" value="${v??''}" aria-label="${esc(teamName(t))} ronde ${ri+1}"></td>`; }).join('')}
+    <td class="r total">${fmt(rk[t.id]?.total)}</td>
+    <td class="r"><input id="so-${t.id}" type="number" step="any" data-t="${t.id}.tiebreak" value="${esc(t.tiebreak??'')}" aria-label="Shoot-out ${esc(teamName(t))}" style="width:100px"></td></tr>`).join('');
+  const foot=rs.map(r=>{ const vals=ts.map(t=>rawScore(q,t,r)).filter(v=>v!=null); const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+    return `<td class="r small"><span class="num">${vals.length}/${ts.length}</span><br><span class="muted">gem ${fmt(avg)}</span></td>`; }).join('');
+  return `<div class="banner info"><p>Vul per ronde de punten in die een team heeft gehaald. <b>Enter</b> springt naar het volgende team. Halve punten mogen, zoals bij de muziekronde (artiest of titel goed is 0,5).</p>
+    <label class="field" style="min-width:200px"><span>Nu bezig met</span><select id="cur-round" data-q="currentRound"><option value="">—</option>${rs.map((r,i)=>`<option value="${r.id}" ${q.currentRound===r.id?'selected':''}>Ronde ${i+1}: ${esc(r.title)}</option>`).join('')}</select></label></div>
+  <div class="tbl-wrap"><table class="tbl"><thead><tr><th class="c">#</th><th>Team</th>${head}<th class="r">Totaal</th><th class="r">Shoot-out${q.tiebreak?.answer!=null&&q.tiebreak?.answer!==''?'<br><span style="text-transform:none;letter-spacing:0;font-weight:500">juist: '+esc(q.tiebreak.answer)+'</span>':''}</th></tr></thead>
+  <tbody>${body}</tbody><tfoot><tr><td></td><td class="small muted">Ingevuld</td>${foot}<td></td><td></td></tr></tfoot></table></div>`;
+}
+
+function tabStand(q){
+  const rs=q.rounds||[]; const last=lastScoredIdx(q);
+  if(last<0) return '<p class="muted">Nog geen scores ingevuld. Zodra de eerste ronde is nagekeken, verschijnt hier de stand.</p>';
+  const after=ui.standAfter!=null&&ui.standAfter<rs.length?ui.standAfter:last;
+  const st=standings(q,after); const prev=after>0?standings(q,after-1):null; const pr={}; if(prev) prev.forEach(r=>pr[r.t.id]=r.rank);
+  const lead=st[0]?.total||0; const isFinal=after===rs.length-1;
+  const controls=`<div class="spread"><label class="field" style="min-width:220px"><span>Stand na</span><select id="stand-after" data-ui="standAfter">${rs.map((r,i)=>`<option value="${i}" ${i===after?'selected':''}>Ronde ${i+1}: ${esc(r.title)}${i===rs.length-1?' (eindstand)':''}</option>`).join('')}</select></label>
+    <div class="row"><div class="seg" role="group" aria-label="Weergave"><button aria-pressed="${!ui.readOrder}" data-a="readOrder" data-v="0">Tabel</button><button aria-pressed="${ui.readOrder}" data-a="readOrder" data-v="1">Voorlezen</button></div><button class="btn" data-a="exportStand" data-i="${after}">${I.dl}CSV</button></div></div>`;
+  if(ui.readOrder){
+    const rev=st.slice().reverse();
+    return `${controls}<p class="muted">Voorleesvolgorde: van de laatste naar de eerste plaats.</p><div class="readout">${rev.map(r=>`<div class="${r.rank<=3?'top3':''}"><span class="pl">${r.rank}e</span><span class="nm">${esc(teamName(r.t))}${r.soUsed?' <span class="chip c4">shoot-out</span>':''}</span><span class="pt">${fmt(r.total)}</span></div>`).join('')}</div>`;
+  }
+  const rows=st.map(r=>{ const d=prev?pr[r.t.id]-r.rank:0; const mv=!prev?'':d>0?`<span class="mv up">▲${d}</span>`:d<0?`<span class="mv down">▼${-d}</span>`:'<span class="mv eq">=</span>';
+    return `<tr><td class="c">${r.rank<=3?`<span class="medal m${r.rank}">${r.rank}</span>`:`<span class="rank">${r.rank}</span>`}</td><td>${mv}</td><td><span class="tname ${r.t.name?'':'ph'}">${esc(teamName(r.t))}</span>${r.soUsed?` <span class="chip c4">shoot-out: ${esc(r.t.tiebreak??'–')}</span>`:''}</td>
+      ${r.per.map(p=>`<td class="r num">${fmt(p)}</td>`).join('')}
+      <td class="r total">${fmt(r.total)}</td><td class="r small muted num">${r.total===lead?'':'−'+fmt(lead-r.total)}</td></tr>`; }).join('');
+  return `${controls}
+  <div class="tbl-wrap"><table class="tbl"><thead><tr><th class="c">#</th><th></th><th>Team</th>${rs.slice(0,after+1).map((r,i)=>`<th class="r">R${i+1}</th>`).join('')}<th class="r">Totaal</th><th class="r">Achterstand</th></tr></thead><tbody>${rows}</tbody></table></div>
+  ${isFinal&&q.tiebreak?.question?`<p class="small muted">Shoot-out: ${esc(q.tiebreak.question)} Juiste antwoord: <b class="num">${esc(q.tiebreak.answer??'nog niet ingevuld')}</b></p>`:''}`;
+}
+
+function tabScript(q){
+  const rs=q.rounds||[]; if(!rs.length) return '<p class="muted">Nog geen rondes in het programma.</p>';
+  const U=usage(); const hid=ui.hideAnswers?'hide':'';
+  return `<div class="spread"><p class="muted" style="max-width:60ch">Je spiekbriefje voor de microfoon${q.host?', '+esc(q.host):''}. Open dit op je telefoon of tablet tijdens de quiz.</p>
+    <label class="check"><input id="hide-ans" type="checkbox" data-ui="hideAnswers" ${ui.hideAnswers?'checked':''}> Antwoorden vervagen</label></div>
+  ${rs.map((r,i)=>{ const t=typeOf(r.typeId); const isBlad=isSheet(r.typeId); const lst=isList(r.typeId); const qc=num(r.qCount)||0; const items=[]; let headExtra='',opdracht='';
+    if(isBlad){ const sh=S.sheets[r.sheetId]; const its=sheetItems(sh);
+      headExtra=`<div class="row" style="align-items:flex-end">${sh&&sh.pdf?`<button class="btn btn-banana" data-a="viewSheetPdf" data-id="${sh.id}">Blad tonen</button>`:''}<label class="field" style="min-width:220px"><span>${lst?'Lijstvraag':'Vragenblad'}</span>${sheetSelect(r,'ss-'+r.id,U)}</label></div>`;
+      if(lst&&sh){ opdracht=`<div class="listq">${esc(sh.question||sh.name)}</div><p class="small muted">Volgorde maakt niet uit · ${fmt(num(r.pts)||1)} punt per goed antwoord · ${its.length} antwoorden op de lijst</p><ul class="listans">${its.map(it=>`<li class="${hid}"><span>${esc(it.a)}</span></li>`).join('')}</ul>`; }
+      else if(sh&&sh.question) opdracht=`<div class="opdracht">${esc(sh.question)}</div>`;
+      if(lst&&sh){}
+      else if(!sh) items.push(`<li class="empty"><div>Kies hierboven ${lst?'een lijstvraag':'een vragenblad'}; de antwoorden verschijnen dan hier.</div></li>`);
+      else for(let k=0;k<Math.max(qc,its.length);k++){ const it=its[k]; items.push(it?`<li><div>${it.p?`<div class="sq">${esc(it.p)}</div>`:''}<div class="sa ${hid}" style="${it.p?'':'margin-top:0'}">${esc(it.a)}</div></div></li>`:`<li class="empty"><div>Leeg op dit blad</div></li>`); }
+    } else { const ids=r.questionIds||[];
+      for(let k=0;k<Math.max(qc,ids.length);k++){ const qq=S.questions[ids[k]];
+        items.push(qq?`<li><div><div class="sq">${esc(qq.prompt)}</div><div class="sa ${hid}">${esc(qq.answer)}</div>${qq.fact?`<div class="sf ${hid}"><b>Feitje</b>${esc(qq.fact)}</div>`:''}${qq.media||qq.notes?`<div class="sm">${esc([qq.media,qq.notes].filter(Boolean).join(' · '))}</div>`:''}</div></li>`:`<li class="empty"><div>Nog geen vraag gekozen</div></li>`); }
+      headExtra=`<button class="btn btn-sm" data-a="openPicker" data-id="${r.id}">Vragen kiezen</button>`; }
+    const sh=isBlad?S.sheets[r.sheetId]:null;
+    return `<section class="script-round card"><div class="script-head"><div><div class="eyebrow">Ronde ${i+1} · ${esc(t.medium||'')} · max ${fmt(roundMax(r))} pt</div><h2>${esc(r.title)}${sh&&!lst?' · '+esc(sh.name):''}</h2></div>${headExtra}</div>${opdracht}${items.length?`<ol>${items.join('')}</ol>`:''}</section>`; }).join('')}
+  ${q.tiebreak?.question?`<section class="card"><div class="eyebrow">Shoot-out</div><div class="sq" style="margin-top:4px">${esc(q.tiebreak.question)}</div><div class="sa ${hid}">${esc(q.tiebreak.answer??'')}</div></section>`:''}`;
+}
+
+/* ----- locaties ----- */
+const WD=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+const NTH={'1':'1e','2':'2e','3':'3e','4':'4e','-1':'laatste'};
+const MON=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+function isoD(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function blankVenue(){ return {name:'',street:'',postcode:'',city:'',contactName:'',contactPhone:'',contactEmail:'',notes:'',recurring:{enabled:false,pattern:'monthly',nth:'3',weekday:'4',start:'20:00',host:'',price:7,maxTeams:20,skipMonths:[]}}; }
+function recurText(v){ const r=v&&v.recurring; if(!r||!r.enabled) return 'Geen vaste quizavond';
+  let t=r.pattern==='weekly'?`Iedere ${WD[+r.weekday]}`:`Iedere ${NTH[String(r.nth)]||r.nth} ${WD[+r.weekday]} van de maand`;
+  if(r.start) t+=` om ${r.start}`; const sk=(r.skipMonths||[]).slice().sort((a,b)=>a-b); if(sk.length) t+=` (niet in ${sk.map(m=>MON[m]).join(', ')})`; return t; }
+function nextOccurrences(v,fromISO,months){
+  const r=v&&v.recurring; if(!r||!r.enabled) return []; const out=[]; const wd=+r.weekday; const skip=r.skipMonths||[];
+  const from=new Date(fromISO+'T00:00:00'); const end=new Date(from); end.setMonth(end.getMonth()+months);
+  if(r.pattern==='weekly'){ const d=new Date(from); while(d.getDay()!==wd) d.setDate(d.getDate()+1); for(;d<=end;d.setDate(d.getDate()+7)) if(!skip.includes(d.getMonth())) out.push(isoD(d)); return out; }
+  const nth=+r.nth;
+  for(let k=0;k<=months;k++){ const base=new Date(from.getFullYear(),from.getMonth()+k,1); const dim=new Date(base.getFullYear(),base.getMonth()+1,0).getDate(); let day;
+    if(nth>0){ day=1+((wd-base.getDay()+7)%7)+(nth-1)*7; if(day>dim) continue; } else { const lastDow=new Date(base.getFullYear(),base.getMonth(),dim).getDay(); day=dim-((lastDow-wd+7)%7); }
+    const d=new Date(base.getFullYear(),base.getMonth(),day); if(d>=from&&d<=end&&!skip.includes(d.getMonth())) out.push(isoD(d)); }
+  return out;
+}
+function quizAt(v,date){ return Object.values(S.quizzes).find(q=>q.venueId===v.id&&q.date===date); }
+function unplanned(v,months){ return nextOccurrences(v,todayISO(),months).filter(d=>!quizAt(v,d)); }
+function venueLabel(q){ const v=S.venues[q.venueId]; return v?v.name+(v.city?', '+v.city:''):(q.venue||''); }
+function venueField(q){ const vs=Object.values(S.venues).sort((a,b)=>(a.name||'').localeCompare(b.name||'','nl'));
+  return `<label class="field"><span>Locatie</span><select id="qf-venue" data-q="venueId"><option value="">${q.venue&&!q.venueId?esc(q.venue)+' (niet in locaties)':'— kies een locatie —'}</option>${vs.map(v=>`<option value="${v.id}" ${q.venueId===v.id?'selected':''}>${esc(v.name)}${v.city?' ('+esc(v.city)+')':''}</option>`).join('')}</select></label>`; }
+function homeUnplanned(){
+  const rows=[]; Object.values(S.venues).forEach(v=>unplanned(v,2).forEach(d=>rows.push({v,d}))); rows.sort((a,b)=>a.d.localeCompare(b.d));
+  if(!rows.length) return '';
+  return `<section class="card stack"><div class="spread"><div><div class="eyebrow">Vaste avonden</div><h2>Nog in te plannen</h2></div><span class="small muted">Komende 2 maanden</span></div>
+    <div class="stack" style="gap:6px">${rows.slice(0,8).map(({v,d})=>`<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:8px"><div><b>${esc(fmtDate(d,{weekday:'long',day:'numeric',month:'long'}))}</b> <span class="muted">· ${esc(v.name)}${v.recurring.start?' · '+esc(v.recurring.start):''}</span></div><button class="btn btn-sm btn-primary" data-a="planDate" data-venue="${v.id}" data-date="${d}">${I.plus}Inplannen</button></div>`).join('')}</div></section>`;
+}
+function viewVenues(){
+  const vs=Object.values(S.venues).sort((a,b)=>(a.name||'').localeCompare(b.name||'','nl'));
+  const card=v=>{ const occ=nextOccurrences(v,todayISO(),3).slice(0,5); const played=Object.values(S.quizzes).filter(q=>q.venueId===v.id).length; const r=v.recurring||{};
+    const addr=[v.street,[v.postcode,v.city].filter(Boolean).join('  ')].filter(Boolean);
+    return `<section class="card stack"><div class="row" style="justify-content:space-between;align-items:flex-start"><div><h2>${esc(v.name)}</h2>${addr.length?`<p class="muted small" style="margin-top:4px">${addr.map(esc).join('<br>')}</p>`:''}</div>
+      <div class="row" style="gap:4px"><button class="btn btn-icon" aria-label="Bewerken" title="Bewerken" data-a="editVenue" data-id="${v.id}">${I.edit}</button><button class="btn btn-icon btn-danger" aria-label="Verwijderen" title="Verwijderen" data-a="askDelVenue" data-id="${v.id}">${I.del}</button></div></div>
+      ${v.contactName||v.contactPhone||v.contactEmail?`<div class="small"><span class="eyebrow">Contact</span><div>${esc(v.contactName||'')}${v.contactPhone?' · '+esc(v.contactPhone):''}${v.contactEmail?' · '+esc(v.contactEmail):''}</div></div>`:''}
+      <div class="small"><span class="eyebrow">Vaste avond</span><div><b>${esc(recurText(v))}</b>${r.enabled&&r.host?' · host '+esc(r.host):''}</div></div>
+      ${occ.length?`<div class="stack" style="gap:6px">${occ.map(d=>{ const q=quizAt(v,d); return `<div class="row" style="justify-content:space-between"><span class="small">${esc(fmtDate(d,{weekday:'short',day:'numeric',month:'long'}))}</span>${q?`<button class="toggle ${q.status==='vervallen'?'vv':'on'}" data-a="openQuizDirect" data-id="${q.id}">${q.status==='vervallen'?'Vervallen':statusLabel(q.status)}</button>`:`<button class="btn btn-sm" data-a="planDate" data-venue="${v.id}" data-date="${d}">${I.plus}Inplannen</button>`}</div>`; }).join('')}
+        ${unplanned(v,3).length>1?`<button class="btn btn-sm" data-a="planAll" data-venue="${v.id}" style="align-self:flex-start">Alle avonden komende 3 maanden inplannen</button>`:''}</div>`:''}
+      ${v.notes?`<p class="small muted">${esc(v.notes)}</p>`:''}
+      <span class="small muted">${played} quizavond${played===1?'':'en'} in de Quizcentrale</span></section>`; };
+  return `<div class="spread"><div><div class="eyebrow">Database</div><h1>Locaties</h1><p class="muted" style="max-width:62ch;margin-top:6px">Kroegen en zalen waar je quizt, met adres, contactpersoon en vaste quizavonden. Vaste avonden plan je met één klik in.</p></div>
+    <button class="btn btn-primary" data-a="newVenue">${I.plus}Nieuwe locatie</button></div>
+  ${vs.length?`<div class="qcards">${vs.map(card).join('')}</div>`:`<div class="card empty"><p>Nog geen locaties. Voeg je eerste kroeg toe, bijvoorbeeld met een vaste quiz op iedere 3e donderdag van de maand.</p><button class="btn btn-primary" data-a="newVenue">${I.plus}Eerste locatie</button></div>`}`;
+}
+
+/* ----- bank ----- */
+function matchCommon(x,b,used){
+  if(b.type&&x.typeId!==b.type) return false;
+  if(b.tag&&!(x.tags||[]).includes(b.tag)) return false;
+  if(b.diff&&String(x.diff)!==b.diff) return false;
+  if(b.usage==='unused'&&used) return false;
+  if(b.usage==='used'&&!used) return false;
+  return true;
+}
+function bankFiltered(){
+  const b=ui.bank; const U=usage(); const qs=b.q.trim().toLowerCase();
+  if(b.kind==='blad') return Object.values(S.sheets).filter(x=>matchCommon(x,b,U.s[x.id])&&(!qs||((x.name||'')+' '+(x.question||'')+' '+(x.tags||[]).join(' ')+' '+(x.items||[]).map(i=>(i.p||'')+' '+(i.a||'')).join(' ')).toLowerCase().includes(qs))).sort((a,c)=>(a.name||'').localeCompare(c.name||'','nl'));
+  return Object.values(S.questions).filter(x=>matchCommon(x,b,U.q[x.id])&&(!qs||((x.prompt||'')+' '+(x.answer||'')+' '+(x.fact||'')+' '+(x.tags||[]).join(' ')+' '+(x.notes||'')+' '+(x.media||'')).toLowerCase().includes(qs))).sort((a,c)=>(c.createdAt||0)-(a.createdAt||0));
+}
+function diffDots(d){ d=num(d)||0; return `<span class="diff" title="Moeilijkheid ${d||'?'} van 3">${[1,2,3].map(i=>`<i class="${i<=d?'f':''}"></i>`).join('')}</span>`; }
+function usageText(u,label){ if(!u||!u.length) return `<span class="use">${label||'Nog niet gebruikt'}</span>`; const l=u.map(x=>esc(x.name)+(x.date?' ('+esc(fmtDate(x.date,{day:'numeric',month:'short'}))+')':'')); return `<span class="use warn">Gebruikt: ${l.join(', ')}</span>`; }
+function viewBank(){
+  const b=ui.bank; const isBlad=b.kind==='blad'; const pool=isBlad?Object.values(S.sheets):Object.values(S.questions);
+  const list=bankFiltered(); const U=usage();
+  const tagCount={}; pool.forEach(x=>(x.tags||[]).forEach(t=>tagCount[t]=(tagCount[t]||0)+1));
+  const tags=Object.entries(tagCount).sort((a,c)=>c[1]-a[1]||a[0].localeCompare(c[0])).slice(0,40);
+  const typeCount={}; pool.forEach(x=>typeCount[x.typeId]=(typeCount[x.typeId]||0)+1);
+  const kindTypes=types().filter(t=>b.kind==='blad'?isSheet(t.id):!isSheet(t.id));
+  const items=isBlad?list.slice(0,b.limit).map(x=>{ const its=sheetItems(x);
+      return `<article class="qrow"><div class="qrow-main"><div class="qrow-top">${typeChip(x.typeId)}${diffDots(x.diff)}<span class="chip">${its.length} ${isList(x.typeId)?(its.length===1?'antwoord':'antwoorden'):(its.length===1?'vraag':'vragen')}</span>${x.pdf?`<button class="chip c4" style="cursor:pointer;border:0" data-a="viewSheetPdf" data-id="${x.id}">${/pdf/.test(x.pdf.type||'')?'PDF':'Afbeelding'} tonen</button>`:''}${usageText(U.s[x.id],'Nog niet gespeeld')}</div>
+        ${isList(x.typeId)?`<p class="qp big">${esc(x.question||x.name)}</p>`:`<p class="qp big">${esc(x.name)}</p>${x.question?`<p class="qa">${esc(x.question)}</p>`:''}`}
+        <p class="qa"><span>Antwoorden</span>${esc(its.slice(0,5).map(i=>i.a).join(' · '))}${its.length>5?' …':''}</p>
+        ${(x.tags||[]).length?`<div class="row" style="gap:6px">${x.tags.map(t=>`<button class="tag" data-a="bankTag" data-v="${esc(t)}">#${esc(t)}</button>`).join('')}</div>`:''}
+      </div><div class="qrow-act"><button class="btn btn-icon" aria-label="Bewerken" title="Bewerken" data-a="editSheet" data-id="${x.id}">${I.edit}</button><button class="btn btn-icon btn-danger" aria-label="Verwijderen" title="Verwijderen" data-a="askDelSheet" data-id="${x.id}">${I.del}</button></div></article>`; }).join('')
+    :list.slice(0,b.limit).map(x=>`<article class="qrow"><div class="qrow-main">
+      <div class="qrow-top">${typeChip(x.typeId)}${diffDots(x.diff)}${usageText(U.q[x.id])}</div>
+      <p class="qp">${esc(x.prompt)}</p><p class="qa"><span>${esc(typeOf(x.typeId).answerLabel||'Antwoord')}</span>${esc(x.answer)}</p>${x.fact?`<p class="qf"><b>Feitje</b>${esc(x.fact)}</p>`:''}
+      ${(x.tags||[]).length||x.media?`<div class="row" style="gap:6px">${(x.tags||[]).map(t=>`<button class="tag" data-a="bankTag" data-v="${esc(t)}">#${esc(t)}</button>`).join('')}${x.media?`<span class="small muted">· ${esc(x.media)}</span>`:''}</div>`:''}
+    </div><div class="qrow-act"><button class="btn btn-icon" aria-label="Bewerken" title="Bewerken" data-a="editQuestion" data-id="${x.id}">${I.edit}</button><button class="btn btn-icon btn-danger" aria-label="Verwijderen" title="Verwijderen" data-a="askDelQuestion" data-id="${x.id}">${I.del}</button></div></article>`).join('');
+  return `<div class="spread"><div><div class="eyebrow">Database</div><h1>Vragenbank</h1></div>
+    <div class="row"><button class="btn btn-primary" data-a="${isBlad?'newSheet':'newQuestion'}">${I.plus}${isBlad?'Nieuw vragenblad':'Nieuwe vraag'}</button><button class="btn" data-a="importQ">${I.up2}Importeren</button><button class="btn" data-a="exportCsv">${I.dl}CSV</button><button class="btn" data-a="backup">${I.dl}Back-up</button></div></div>
+  <div class="row"><div class="seg" role="group" aria-label="Soort"><button aria-pressed="${isBlad}" data-a="bankKind" data-v="blad">Vragenbladen <span class="num">${Object.keys(S.sheets).length}</span></button><button aria-pressed="${!isBlad}" data-a="bankKind" data-v="los">Losse vragen <span class="num">${Object.keys(S.questions).length}</span></button></div>
+    <span class="small muted">${isBlad?'Een vragenblad heeft een naam (bijv. Hoofdsteden of Voorhoofden) en kies je in één keer voor een ronde.':'Losse vragen kies je per stuk, zoals bij de Grabbelton.'}</span></div>
+  <div class="typestrip"><button class="chip ${!b.type?'sel':''}" data-a="bankType" data-v="">Alle <b class="num">&nbsp;${pool.length}</b></button>${kindTypes.map(t=>`<button class="chip c${(t.color??5)%6} ${b.type===t.id?'sel':''}" data-a="bankType" data-v="${t.id}">${esc(t.name)} <b class="num">&nbsp;${typeCount[t.id]||0}</b></button>`).join('')}</div>
+  <div class="filters"><label class="field fs"><span>Zoeken</span><input id="bank-q" type="search" data-ui="bank.q" value="${esc(b.q)}" placeholder="${isBlad?'Zoek op bladnaam, vraag of antwoord':'Zoek in vraag, antwoord of tags'}"></label>
+    <label class="field"><span>Moeilijkheid</span><select id="bank-diff" data-ui="bank.diff"><option value="">Alle</option><option value="1" ${b.diff==='1'?'selected':''}>Makkelijk</option><option value="2" ${b.diff==='2'?'selected':''}>Gemiddeld</option><option value="3" ${b.diff==='3'?'selected':''}>Moeilijk</option></select></label>
+    <label class="field"><span>Gebruik</span><select id="bank-usage" data-ui="bank.usage"><option value="">Alles</option><option value="unused" ${b.usage==='unused'?'selected':''}>Nog niet gebruikt</option><option value="used" ${b.usage==='used'?'selected':''}>Al gebruikt</option></select></label>
+    <div class="field"><span>&nbsp;</span><button class="btn" data-a="bankReset">Filters wissen</button></div></div>
+  ${tags.length?`<div class="tagcloud">${tags.map(([t,c])=>`<button class="tag ${b.tag===t?'sel':''}" data-a="bankTag" data-v="${esc(t)}">#${esc(t)}<b>${c}</b></button>`).join('')}</div>`:''}
+  <p class="small muted">${list.length} ${isBlad?(list.length===1?'vragenblad':'vragenbladen'):(list.length===1?'vraag':'vragen')} gevonden</p>
+  <div class="qlist">${items}
+  ${list.length>b.limit?`<button class="btn" data-a="bankMore" style="align-self:center">Toon meer (${list.length-b.limit})</button>`:''}
+  ${!pool.length?`<div class="card empty"><p>${isBlad?'Nog geen vragenbladen. Maak er een aan, bijvoorbeeld “Hoofdsteden” voor de AI-ronde, of plak een lijst uit Excel.':'Nog geen losse vragen. Voeg ze één voor één toe of plak een lijst uit Excel.'}</p><div class="row"><button class="btn btn-primary" data-a="${isBlad?'newSheet':'newQuestion'}">${I.plus}${isBlad?'Eerste vragenblad':'Eerste vraag'}</button>${!Object.keys(S.quizzes).length?'':''}</div></div>`:''}</div>`;
+}
+
+/* ----- types ----- */
+function viewTypes(){
+  const cnt={}; Object.values(S.questions).forEach(x=>cnt[x.typeId]=(cnt[x.typeId]||0)+1); Object.values(S.sheets).forEach(x=>cnt[x.typeId]=(cnt[x.typeId]||0)+1);
+  return `<div class="spread"><div><div class="eyebrow">Instellingen</div><h1>Rondetypes</h1><p class="muted" style="max-width:62ch;margin-top:6px">De vaste formats van je quiz. Een nieuwe ronde in het programma neemt deze standaardwaarden over; per avond kun je ze nog aanpassen.</p></div>
+    <button class="btn btn-primary" data-a="addType">${I.plus}Rondetype toevoegen</button></div>
+  <div class="stack">${types().map((t,i)=>`<section class="card stack"><div class="row" style="justify-content:space-between"><div class="row"><span class="chip c${(t.color??5)%6}">${esc(t.name)}</span><span class="small muted">${cnt[t.id]||0} in de vragenbank</span></div>
+      <button class="btn btn-sm btn-danger" data-a="askDelType" data-i="${i}" ${cnt[t.id]?'disabled title="Er staan nog vragen of bladen van dit type in de bank"':''}>${I.del}Verwijderen</button></div>
+    <div class="fgrid">
+      <label class="field"><span>Naam</span><input id="ty-${i}-name" type="text" data-ty="${i}.name" value="${esc(t.name)}"></label>
+      <label class="field"><span>Soort</span><select id="ty-${i}-format" data-ty="${i}.format"><option value="blad" ${formatOf(t.id)==='blad'?'selected':''}>Vragenblad met naam</option><option value="lijst" ${formatOf(t.id)==='lijst'?'selected':''}>Lijstvraag (1 vraag, lijstje antwoorden)</option><option value="los" ${formatOf(t.id)==='los'?'selected':''}>Losse vragen</option></select></label>
+      <label class="field wide"><span>Uitleg</span><input id="ty-${i}-desc" type="text" data-ty="${i}.desc" value="${esc(t.desc)}"></label>
+      <label class="field"><span>Vragen</span><input id="ty-${i}-q" type="number" min="1" data-ty="${i}.q" value="${esc(t.q)}"></label>
+      <label class="field"><span>Punten per vraag</span><input id="ty-${i}-pts" type="number" step="0.5" min="0" data-ty="${i}.pts" value="${esc(t.pts)}"></label>
+      <label class="field"><span>Speeltijd (min)</span><input id="ty-${i}-dur" type="number" min="0" data-ty="${i}.dur" value="${esc(t.dur)}"></label>
+      <label class="field"><span>Hoe gesteld</span><input id="ty-${i}-medium" type="text" data-ty="${i}.medium" value="${esc(t.medium)}" placeholder="Microfoon, speaker, vragenblad"></label>
+      <label class="field"><span>Label vraagveld</span><input id="ty-${i}-pl" type="text" data-ty="${i}.promptLabel" value="${esc(t.promptLabel)}"></label>
+      <label class="field"><span>Label antwoordveld</span><input id="ty-${i}-al" type="text" data-ty="${i}.answerLabel" value="${esc(t.answerLabel)}"></label>
+      <label class="field"><span>Kleur</span><select id="ty-${i}-color" data-ty="${i}.color">${['Blauw','Paars','Groenblauw','Roze','Oker','Groen'].map((c,k)=>`<option value="${k}" ${(t.color??5)%6===k?'selected':''}>${c}</option>`).join('')}</select></label>
+    </div></section>`).join('')}</div>`;
+}
+
+/* ---------- modals ---------- */
+function openModal(m){ ui.modal=m; renderModal(); setTimeout(()=>{ const el=$('#modal-root [autofocus]'); if(el) el.focus(); },30); }
+function closeModal(){ const cm=ui.modal; if(cm&&cm.kind==='sheet'&&!cm.saved&&cm.newUploads) cm.newUploads.forEach(dropAsset); const back=ui.modal&&ui.modal.returnTo; ui.modal=null; if(back) openModal(back); else renderModal(); render(); }
+function renderModal(){
+  const m=ui.modal; const root=$('#modal-root');
+  if(!m){ root.innerHTML=''; return; }
+  const ae=document.activeElement; const f=ae&&root.contains(ae)&&ae.id?{id:ae.id,s:ae.selectionStart,e:ae.selectionEnd}:null;
+  let h='',b='',ft='',wide=false;
+  if(m.kind==='question'){
+    const d=m.draft; const t=typeOf(d.typeId);
+    h=m.id?'Vraag bewerken':'Nieuwe losse vraag';
+    b=`<label class="field"><span>Ronde</span><select id="m-type" data-m="typeId" data-rr="1">${types().filter(x=>formatOf(x.id)==='los').map(x=>`<option value="${x.id}" ${d.typeId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
+      <label class="field"><span>${esc(t.promptLabel||'Vraag')}</span><textarea id="m-prompt" data-m="prompt" autofocus>${esc(d.prompt)}</textarea></label>
+      <label class="field"><span>${esc(t.answerLabel||'Antwoord')}</span><input id="m-answer" type="text" data-m="answer" value="${esc(d.answer)}"></label>
+      <label class="field"><span>Feitje of context (vertelt de host na het antwoord)</span><textarea id="m-fact" data-m="fact" style="min-height:60px" placeholder="Wist je dat…">${esc(d.fact||'')}</textarea></label>
+      <div class="fgrid"><label class="field" style="grid-column:span 2"><span>Tags (komma's ertussen)</span><input id="m-tags" type="text" data-m="tagsText" value="${esc(d.tagsText)}" placeholder="sport, jaren 80, voetbal"></label>
+      <label class="field"><span>Moeilijkheid</span><select id="m-diff" data-m="diff"><option value="">?</option>${[1,2,3].map(k=>`<option value="${k}" ${String(d.diff)===String(k)?'selected':''}>${['','Makkelijk','Gemiddeld','Moeilijk'][k]}</option>`).join('')}</select></label></div>
+      <label class="field"><span>Bron</span><input id="m-media" type="text" data-m="media" value="${esc(d.media)}" placeholder="Waar komt de vraag vandaan"></label>
+      <label class="field"><span>Notities voor de quizmaster</span><textarea id="m-notes" data-m="notes" style="min-height:52px">${esc(d.notes)}</textarea></label>`;
+    ft=`${m.id?'':`<label class="check grow"><input id="m-again" type="checkbox" data-m="again" ${d.again?'checked':''}> Hierna nog een vraag toevoegen</label>`}<button class="btn" data-a="close">Annuleren</button><button class="btn btn-primary" data-a="saveQuestion">Opslaan</button>`;
+  } else if(m.kind==='sheet'&&isList(m.draft.typeId)){
+    wide=true; const d=m.draft;
+    h=m.id?'Lijstvraag bewerken':'Nieuwe lijstvraag';
+    b=`<div class="fgrid"><label class="field"><span>Ronde</span><select id="m-stype" data-m="typeId" data-rr="1">${types().filter(x=>isSheet(x.id)).map(x=>`<option value="${x.id}" ${d.typeId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
+      <label class="field" style="grid-column:span 2"><span>Korte naam (optioneel, voor in de lijst)</span><input id="m-sname" type="text" data-m="name" value="${esc(d.name)}" placeholder="Bijv. Schoenmerken"></label></div>
+      <label class="field"><span>De vraag</span><textarea id="m-sq" data-m="question" style="min-height:64px" placeholder="Noem de 10 grootste schoenmerken" autofocus>${esc(d.question)}</textarea></label>
+      <p class="small muted">Vul de goede antwoorden in. De volgorde maakt niet uit: elk genoemd antwoord dat op de lijst staat, is een punt. Meerdere schrijfwijzen? Zet ze achter elkaar met een schuine streep, bijv. <i>Asics / Onitsuka</i>.</p>
+      <div class="listedit">${d.items.map((it,k)=>`<div class="row" style="gap:6px;flex-wrap:nowrap"><input id="m-ia-${k}" type="text" data-m="items.${k}.a" value="${esc(it.a)}" placeholder="Antwoord" aria-label="Antwoord ${k+1}"><button class="btn btn-icon" data-a="sheetDelRow" data-i="${k}" aria-label="Antwoord ${k+1} verwijderen" title="Verwijderen">${I.x}</button></div>`).join('')}</div>
+      <div class="row"><button class="btn btn-sm" data-a="sheetAddRow">${I.plus}Antwoord toevoegen</button></div>
+      <details class="paste" ${m.pasteOpen?'open':''}><summary data-a="togglePaste">Antwoorden in één keer plakken</summary><div class="stack"><p class="small muted">Eén antwoord per regel, of allemaal op één regel gescheiden door komma's.</p><textarea id="m-paste" data-m="paste" style="min-height:100px">${esc(d.paste||'')}</textarea><div><button class="btn btn-sm" data-a="sheetPaste">Toevoegen</button></div></div></details>
+      <div class="fgrid"><label class="field" style="grid-column:span 2"><span>Tags</span><input id="m-stags" type="text" data-m="tagsText" value="${esc(d.tagsText)}" placeholder="merken, sport"></label>
+      <label class="field"><span>Moeilijkheid</span><select id="m-sdiff" data-m="diff"><option value="">?</option>${[1,2,3].map(k=>`<option value="${k}" ${String(d.diff)===String(k)?'selected':''}>${['','Makkelijk','Gemiddeld','Moeilijk'][k]}</option>`).join('')}</select></label></div>
+      <label class="field"><span>Bron of notities</span><input id="m-snotes" type="text" data-m="notes" value="${esc(d.notes)}" placeholder="Waar komt de lijst vandaan, peildatum"></label>`;
+    const n=d.items.filter(it=>String(it.a||'').trim()).length;
+    ft=`<span class="grow"><b class="num">${n}</b> antwoorden op de lijst</span><button class="btn" data-a="close">Annuleren</button><button class="btn btn-primary" data-a="saveSheet">Opslaan</button>`;
+  } else if(m.kind==='sheet'){
+    wide=true; const d=m.draft; const t=typeOf(d.typeId);
+    h=m.id?'Vragenblad bewerken':'Nieuw vragenblad';
+    b=`<div class="fgrid"><label class="field"><span>Ronde</span><select id="m-stype" data-m="typeId" data-rr="1">${types().filter(x=>isSheet(x.id)).map(x=>`<option value="${x.id}" ${d.typeId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
+      <label class="field" style="grid-column:span 2"><span>Naam van het blad</span><input id="m-sname" type="text" data-m="name" value="${esc(d.name)}" placeholder="Hoofdsteden, Bands, Voorhoofden…" autofocus></label></div>
+      <label class="field"><span>Opdracht voor de teams (optioneel, komt bovenaan in het script)</span><input id="m-sq" type="text" data-m="question" value="${esc(d.question)}" placeholder="${d.typeId==='lijstjes'?'Noem de 10 meest voorkomende achternamen in Nederland':'Welke hoofdstad wordt hier uitgebeeld?'}"></label>
+      ${sheetFileSection(m)}
+      <div class="items"><div class="item-row item-head"><span></span><span>${esc(t.promptLabel||'Vraag')} · optioneel</span><span>${esc(t.answerLabel||'Antwoord')}</span><span></span></div>
+      ${d.items.map((it,k)=>`<div class="item-row"><b>${k+1}</b><input class="ip" id="m-ip-${k}" type="text" data-m="items.${k}.p" value="${esc(it.p)}" placeholder="${esc(t.promptLabel||'')}" aria-label="Vraag ${k+1}"><input class="ia" id="m-ia-${k}" type="text" data-m="items.${k}.a" value="${esc(it.a)}" placeholder="${esc(t.answerLabel||'Antwoord')}" aria-label="Antwoord ${k+1}"><button class="btn btn-icon" data-a="sheetDelRow" data-i="${k}" aria-label="Regel ${k+1} verwijderen" title="Regel verwijderen">${I.x}</button></div>`).join('')}</div>
+      <div class="row"><button class="btn btn-sm" data-a="sheetAddRow">${I.plus}Regel toevoegen</button></div>
+      <details class="paste" ${m.pasteOpen?'open':''}><summary data-a="togglePaste">Antwoorden in één keer plakken</summary><div class="stack"><p class="small muted">Eén per regel. Alleen het antwoord, of vraag en antwoord gescheiden door een puntkomma of tab. Lege regels in het blad worden eerst gevuld.</p><textarea id="m-paste" data-m="paste" style="min-height:120px">${esc(d.paste||'')}</textarea><div><button class="btn btn-sm" data-a="sheetPaste">Toevoegen aan het blad</button></div></div></details>
+      <div class="fgrid"><label class="field" style="grid-column:span 2"><span>Tags</span><input id="m-stags" type="text" data-m="tagsText" value="${esc(d.tagsText)}" placeholder="aardrijkskunde, europa"></label>
+      <label class="field"><span>Moeilijkheid</span><select id="m-sdiff" data-m="diff"><option value="">?</option>${[1,2,3].map(k=>`<option value="${k}" ${String(d.diff)===String(k)?'selected':''}>${['','Makkelijk','Gemiddeld','Moeilijk'][k]}</option>`).join('')}</select></label></div>
+      <label class="field"><span>Notities</span><input id="m-snotes" type="text" data-m="notes" value="${esc(d.notes)}" placeholder="Bijv. bestandsnaam van het blad, bron"></label>`;
+    const n=d.items.filter(it=>String(it.a||'').trim()).length;
+    ft=`<span class="grow"><b class="num">${n}</b> antwoorden ingevuld</span><button class="btn" data-a="close">Annuleren</button><button class="btn btn-primary" data-a="saveSheet">Opslaan</button>`;
+  } else if(m.kind==='team'){
+    const d=m.draft;
+    h='Aanmelding bewerken';
+    b=`<div class="fgrid"><label class="field wide"><span>Contactpersoon</span><input id="m-tcap" type="text" data-m="captain" value="${esc(d.captain)}" autofocus></label>
+      <label class="field wide"><span>Teamnaam (op de avond)</span><input id="m-tname" type="text" data-m="name" value="${esc(d.name)}" placeholder="Bedenken ze ter plekke"></label>
+      <label class="field"><span>Telefoon</span><input id="m-tph" type="tel" data-m="phone" value="${esc(d.phone)}"></label>
+      <label class="field"><span>E-mail</span><input id="m-tem" type="email" data-m="email" value="${esc(d.email)}"></label>
+      <label class="field"><span>Spelers</span><input id="m-tpl" type="number" min="1" data-m="players" value="${esc(d.players)}"></label>
+      <label class="field"><span>Tafel</span><input id="m-ttb" type="number" min="0" data-m="table" value="${esc(d.table)}"></label>
+      <label class="field"><span>Status</span><select id="m-tst" data-m="status">${['ingeschreven','wachtlijst','afgemeld'].map(s=>`<option ${d.status===s?'selected':''}>${s}</option>`).join('')}</select></label>
+      <label class="field"><span>Betaalwijze</span><select id="m-tpm" data-m="payMethod">${['','Tikkie vooraf','Contant aan de deur','Pin aan de deur','Factuur'].map(s=>`<option ${d.payMethod===s?'selected':''}>${s}</option>`).join('')}</select></label>
+      <label class="check"><input id="m-tpaid" type="checkbox" data-m="paid" ${d.paid?'checked':''}> Betaald</label>
+      <label class="field wide"><span>Notities</span><input id="m-tno" type="text" data-m="notes" value="${esc(d.notes)}" placeholder="Komt later, wil vooraan zitten…"></label></div>`;
+    ft=`<button class="btn" data-a="close">Annuleren</button><button class="btn btn-primary" data-a="saveTeam">Opslaan</button>`;
+  } else if(m.kind==='picker'){
+    wide=true; const q=curQuiz(); const r=q&&(q.rounds||[]).find(x=>x.id===m.roundId); if(!r){ ui.modal=null; root.innerHTML=''; return; }
+    const U=usage(); const qc=num(r.qCount)||0; const s=(m.search||'').toLowerCase();
+    const pool=Object.values(S.questions).filter(x=>x.typeId===r.typeId).filter(x=>!s||((x.prompt||'')+' '+(x.answer||'')+' '+(x.tags||[]).join(' ')).toLowerCase().includes(s))
+      .map(x=>({x,u:(U.q[x.id]||[]).filter(u=>!(u.quizId===q.id&&u.roundId===r.id))}))
+      .sort((a,c)=>(m.sel.includes(c.x.id)-m.sel.includes(a.x.id))||(a.u.length-c.u.length)||((c.x.createdAt||0)-(a.x.createdAt||0)));
+    h=`Vragen kiezen · ${esc(r.title)}`;
+    b=`<div class="row"><input id="m-psearch" type="search" data-m="search" data-rr="1" value="${esc(m.search||'')}" placeholder="Zoek op woord of tag" style="flex:1" autofocus><button class="btn btn-sm" data-a="newQuestionFromPicker">${I.plus}Nieuwe vraag</button></div>
+      ${pool.length?pool.map(({x,u})=>{ const on=m.sel.includes(x.id); return `<label class="pick ${on?'on':''}"><input type="checkbox" data-a="pickToggle" data-id="${x.id}" ${on?'checked':''}><div><div class="qp">${on?`<span class="chip c0">${m.sel.indexOf(x.id)+1}</span> `:''}${esc(x.prompt)}</div><div class="qa">${esc(x.answer)}</div><div class="row small" style="gap:6px;margin-top:4px">${diffDots(x.diff)}${(x.tags||[]).map(t=>'#'+esc(t)).join(' ')} ${u.length?usageText(u):''}</div></div></label>`; }).join('')
+      :`<p class="muted">Geen vragen van het type ${esc(typeOf(r.typeId).name)} gevonden. Voeg ze toe in de vragenbank.</p>`}`;
+    ft=`<span class="grow"><b class="num">${m.sel.length}/${qc}</b> gekozen${m.sel.length>qc?' · meer dan nodig':''}</span><button class="btn" data-a="pickRandom">Willekeurig aanvullen</button><button class="btn" data-a="close">Annuleren</button><button class="btn btn-primary" data-a="pickSave">Opslaan</button>`;
+  } else if(m.kind==='newQuiz'){
+    const d=m.draft; const vs=Object.values(S.venues).sort((a,b)=>(a.name||'').localeCompare(b.name||'','nl'));
+    const v=S.venues[d.venueId]; const sug=v?nextOccurrences(v,todayISO(),3).slice(0,6):[];
+    h='Nieuwe quizavond';
+    b=`<div class="fgrid"><label class="field"><span>Datum</span><input id="m-qdate" type="date" data-m="date" data-rr="1" value="${esc(d.date)}" autofocus></label>
+      <label class="field" style="grid-column:span 2"><span>Locatie</span><select id="m-qvenue" data-m="venueId" data-rr="1"><option value="">— kies een locatie —</option>${vs.map(x=>`<option value="${x.id}" ${d.venueId===x.id?'selected':''}>${esc(x.name)}${x.city?' ('+esc(x.city)+')':''}</option>`).join('')}</select></label></div>
+      <div><button class="btn btn-sm" data-a="newVenue">${I.plus}Nieuwe locatie toevoegen</button></div>
+      ${sug.length?`<div class="stack" style="gap:6px"><span class="small muted">Vaste avonden bij ${esc(v.name)}: ${esc(recurText(v))}</span><div class="row" style="gap:6px">${sug.map(x=>`<button class="tag ${d.date===x?'sel':''}" data-a="pickDate" data-v="${x}">${esc(fmtDate(x,{weekday:'short',day:'numeric',month:'short'}))}</button>`).join('')}</div></div>`:''}
+      ${v?`<p class="small muted">De avond krijgt de standaardinstellingen van deze locatie${v.recurring&&v.recurring.start?' (aanvang '+esc(v.recurring.start)+')':''} en alle vaste rondes. Je kunt alles daarna nog aanpassen.</p>`:''}`;
+    ft=`<button class="btn" data-a="close">Annuleren</button><button class="btn btn-primary" data-a="createQuiz">Quizavond aanmaken</button>`;
+  } else if(m.kind==='venue'){
+    wide=true; const d=m.draft; const r=d.recurring; const sk=r.skipMonths||[];
+    h=m.id?'Locatie bewerken':'Nieuwe locatie';
+    const fv=(k,l,type='text',ph='')=>`<label class="field"><span>${l}</span><input id="m-v-${k.replace('.','-')}" type="${type}" data-m="${k}" value="${esc(k.split('.').reduce((o,x)=>o&&o[x],d)??'')}" placeholder="${ph}"></label>`;
+    b=`<div class="fgrid"><div class="wide">${fv('name','Naam','text','Charlies Pub')}</div>
+        <div style="grid-column:span 2">${fv('street','Straat en huisnummer')}</div>${fv('postcode','Postcode')}${fv('city','Plaats','text','Ommen')}</div>
+      <h3>Contactpersoon</h3><div class="fgrid">${fv('contactName','Naam')}${fv('contactPhone','Telefoon','tel')}${fv('contactEmail','E-mail','email')}</div>
+      <h3>Vaste quizavonden</h3>
+      <label class="check"><input id="m-v-rec" type="checkbox" data-m="recurring.enabled" data-rr="1" ${r.enabled?'checked':''}> Deze locatie heeft een vaste quizavond</label>
+      ${r.enabled?`<div class="fgrid">
+        <label class="field"><span>Hoe vaak</span><select id="m-v-pat" data-m="recurring.pattern" data-rr="1"><option value="monthly" ${r.pattern!=='weekly'?'selected':''}>Iedere maand</option><option value="weekly" ${r.pattern==='weekly'?'selected':''}>Iedere week</option></select></label>
+        ${r.pattern!=='weekly'?`<label class="field"><span>Welke</span><select id="m-v-nth" data-m="recurring.nth" data-rr="1">${[1,2,3,4,-1].map(n=>`<option value="${n}" ${String(r.nth)===String(n)?'selected':''}>${NTH[n]}</option>`).join('')}</select></label>`:''}
+        <label class="field"><span>Dag</span><select id="m-v-wd" data-m="recurring.weekday" data-rr="1">${[1,2,3,4,5,6,0].map(w=>`<option value="${w}" ${String(r.weekday)===String(w)?'selected':''}>${WD[w]}</option>`).join('')}</select></label>
+        ${fv('recurring.start','Aanvang','time')}
+        ${fv('recurring.host','Vaste host')}${fv('recurring.price','Prijs p.p. (€)','number')}${fv('recurring.maxTeams','Max. teams','number')}
+      </div>
+      <div class="stack" style="gap:6px"><span class="small muted">Geen quiz in (bijv. zomerstop):</span><div class="row" style="gap:6px">${MON.map((x,k)=>`<button class="tag ${sk.includes(k)?'sel':''}" data-a="toggleSkip" data-m="${k}">${x}</button>`).join('')}</div></div>
+      <div class="opdracht">${esc(recurText(d))}. Eerstvolgende: ${nextOccurrences(d,todayISO(),3).slice(0,4).map(x=>esc(fmtDate(x,{weekday:'short',day:'numeric',month:'short'}))).join(', ')||'geen binnen 3 maanden'}</div>`:''}
+      <label class="field"><span>Notities</span><textarea id="m-v-notes" data-m="notes" style="min-height:52px" placeholder="Bijv. beamer aanwezig, parkeren achter, sleutel bij de bar">${esc(d.notes||'')}</textarea></label>`;
+    ft=`<button class="btn" data-a="close">Annuleren</button><button class="btn btn-primary" data-a="saveVenue">Opslaan</button>`;
+  } else if(m.kind==='pdf'){
+    wide=true; const isImg=/^image\//.test(m.file.type||''); h=esc(m.title);
+    b=`${m.sub?`<p class="small muted">${esc(m.sub)}</p>`:''}${isImg?`<img class="pdfimg" src="${esc(m.url)}" alt="${esc(m.title)}">`:`<div id="pdf-pages" class="pdfpages"><p class="muted">Blad laden…</p></div>`}`;
+    ft=`<a class="btn" href="${esc(m.url)}" target="_blank" rel="noopener">Openen in nieuw tabblad</a><button class="btn btn-primary" data-a="close">Sluiten</button>`;
+  } else if(m.kind==='importTeams'){
+    h='Aanmeldingen uit een lijst plakken';
+    b=`<p class="small muted">Eén aanmelding per regel. Scheid de gegevens met een komma, puntkomma of tab, in deze volgorde: <b>contactpersoon, aantal spelers, telefoon, e-mail</b>. Alleen de contactpersoon is verplicht.</p>
+      <textarea id="m-imp" data-m="text" style="min-height:180px" autofocus placeholder="Sanne de Vries, 5, 06-12345678&#10;Mark; 4">${esc(m.text||'')}</textarea>`;
+    ft=`<button class="btn" data-a="close">Annuleren</button><button class="btn btn-primary" data-a="doImportTeams">Toevoegen</button>`;
+  } else if(m.kind==='importQ'){
+    h='Importeren';
+    b=`<p class="small muted">Plak regels uit Excel of Google Sheets (kolommen met tabs) of CSV met puntkomma's.</p>
+      <p class="small"><b>Vragenbladen:</b> ronde; bladnaam; vraag of hint; antwoord; tags<br><span class="muted">Regels met dezelfde ronde en bladnaam komen samen op één blad. Voorbeeld: <i>AI-ronde; Hoofdsteden; ; Parijs; europa</i></span></p>
+      <p class="small"><b>Losse vragen:</b> ronde; vraag; antwoord; tags; moeilijkheid; feitje<br><span class="muted">Voorbeeld: <i>Grabbelton; Wat is de hoofdstad van Canada?; Ottawa; aardrijkskunde; 1</i></span></p>
+      <textarea id="m-impq" data-m="text" style="min-height:160px" autofocus>${esc(m.text||'')}</textarea>
+      <label class="field"><span>Of kies een back-upbestand (.json) of CSV-bestand</span><input id="m-file" type="file" accept=".json,.csv,.txt,.tsv"></label>`;
+    ft=`<button class="btn" data-a="close">Annuleren</button><button class="btn btn-primary" data-a="doImportQ">Importeren</button>`;
+  } else if(m.kind==='msg'){
+    const q=curQuiz(); const t=(q.teams||[]).find(x=>x.id===m.teamId);
+    h=`Bericht voor ${esc(t?.captain||teamName(t))}`;
+    b=`<pre class="out">${esc(fillMsg(q,t))}</pre><p class="small muted">${t?.phone?'Telefoon: '+esc(t.phone)+' · ':''}${t?.email?'E-mail: '+esc(t.email):''}</p>`;
+    ft=`<button class="btn" data-a="editMsgTpl">Tekst aanpassen</button><button class="btn" data-a="close">Sluiten</button><button class="btn btn-primary" data-a="copyMsg">${I.copy}Kopiëren</button>`;
+  } else if(m.kind==='msgTpl'){
+    h='Bevestigingsbericht';
+    b=`<p class="small muted">Deze tekst kopieer je per aanmelding voor WhatsApp of e-mail. Beschikbare velden: {contact} {quiz} {datum} {tijd} {locatie} {spelers} {prijs} {totaal} {host}</p>
+      <textarea id="m-tpl" data-m="text" style="min-height:160px" autofocus>${esc(m.text)}</textarea>`;
+    ft=`<button class="btn" data-a="close">Annuleren</button><button class="btn btn-primary" data-a="saveTpl">Opslaan</button>`;
+  } else if(m.kind==='confirm'){
+    h=esc(m.title); b=`<p>${esc(m.text)}</p>`;
+    ft=`<button class="btn" data-a="close" autofocus>Annuleren</button><button class="btn btn-primary" style="background:var(--bad);border-color:var(--bad);color:#fff" data-a="confirmOk">${esc(m.ok||'Verwijderen')}</button>`;
+  } else if(m.kind==='text'){
+    h=esc(m.title); b=`<p class="small muted">Downloaden is hier niet beschikbaar. Kopieer de inhoud en plak die in een bestand met de naam <b>${esc(m.filename)}</b>.</p><textarea id="m-textout" style="min-height:260px;font-family:var(--f-mono);font-size:.8rem" readonly>${esc(m.content)}</textarea>`;
+    ft=`<button class="btn" data-a="close">Sluiten</button><button class="btn btn-primary" data-a="copyText">${I.copy}Kopiëren</button>`;
+  }
+  root.innerHTML=`<div class="scrim" data-a="scrim"><div class="modal ${wide?'wide':''}" role="dialog" aria-modal="true" aria-label="${h.replace(/<[^>]+>/g,'')}"><div class="modal-h"><h2>${h}</h2><button class="btn btn-icon" data-a="close" aria-label="Sluiten">${I.x}</button></div><div class="modal-b">${b}</div><div class="modal-f">${ft}</div></div></div>`;
+  if(f){ const el=document.getElementById(f.id); if(el){ el.focus(); try{ el.setSelectionRange(f.s,f.e); }catch(x){} } }
+  if(m.kind==='pdf'&&!/^image\//.test(m.file.type||'')) renderPdf(m);
+}
+function sheetFileSection(m){ const pf=m.draft.pdf;
+  return `<div class="card-flat stack" style="gap:8px"><span class="eyebrow">Blad dat de teams op tafel krijgen (PDF of afbeelding)</span>
+    ${pf?`<div class="row"><span class="chip c4">${/pdf/.test(pf.type||'')?'PDF':'Afbeelding'}</span><b style="overflow-wrap:anywhere">${esc(pf.name||'bestand')}</b><span class="small muted">${fmtSize(pf.size)}</span>${pf.path?`<button class="btn btn-sm" data-a="viewDraftPdf">Bekijken</button>`:'<span class="small muted">(bestand niet meer beschikbaar, upload opnieuw)</span>'}${S.mode==='cloud'?`<button class="btn btn-sm btn-danger" data-a="removeDraftPdf">Weghalen</button>`:''}</div>`:''}
+    ${S.mode==='cloud'?`<label class="field"><span>${pf?'Ander bestand kiezen':'Bestand kiezen (max 20 MB)'}</span><input id="m-pdf" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" data-upload="sheet"></label>${m.uploading?'<p class="small"><b>Uploaden…</b></p>':''}`
+      :`<p class="small muted">Uploaden kan alleen als je bent ingelogd.</p>`}</div>`; }
+async function uploadSheetFile(file){
+  const m=ui.modal; if(!file||!m||m.kind!=='sheet'||S.mode!=='cloud') return;
+  const type=file.type||(/\.pdf$/i.test(file.name)?'application/pdf':/\.png$/i.test(file.name)?'image/png':/\.jpe?g$/i.test(file.name)?'image/jpeg':'');
+  if(!/^(application\/pdf|image\/(png|jpeg|webp))$/.test(type)){ toast('Kies een PDF, JPG, PNG of WebP-bestand','bad'); return; }
+  if(file.size>20*1024*1024){ toast('Dit bestand is groter dan 20 MB. Verklein de PDF en probeer het opnieuw.','bad'); return; }
+  m.uploading=true; renderModal();
+  try{ const ext=(file.name.match(/\.([a-z0-9]+)$/i)||[,''])[1].toLowerCase(); const path=new Date().getFullYear()+'/'+uid()+(ext?'.'+ext:'');
+    const {error}=await sb.storage.from(BUCKET).upload(path,file,{contentType:type,upsert:false}); if(error) throw error;
+    (m.newUploads=m.newUploads||[]).push(path); m.draft.pdf={path,name:file.name,size:file.size,type}; toast('Bestand geüpload. Vergeet niet op Opslaan te drukken.'); }
+  catch(e){ console.error(e); const msg=String(e&&e.message||''); toast(/size|large/i.test(msg)?'Bestand te groot (max 20 MB)':/mime|type/i.test(msg)?'Dit bestandstype wordt niet ondersteund':'Uploaden mislukt. Probeer het opnieuw.','bad'); }
+  m.uploading=false; if(ui.modal===m) renderModal();
+}
+function dropAsset(path){ if(path&&sb&&S.mode==='cloud') sb.storage.from(BUCKET).remove([path]).catch(()=>{}); }
+async function renderPdf(m){
+  const box=$('#pdf-pages'); if(!box||box.dataset.done) return; box.dataset.done='1';
+  try{ const lib=await loadPdfJs(); const res=await fetch(m.url); if(!res.ok) throw new Error('missing'); const buf=await res.arrayBuffer();
+    const doc=await lib.getDocument({data:buf}).promise; if(ui.modal!==m) return; box.innerHTML='';
+    const w=box.clientWidth||800; const dpr=Math.min(2,window.devicePixelRatio||1);
+    for(let i=1;i<=doc.numPages;i++){ const page=await doc.getPage(i); if(ui.modal!==m) return; const v1=page.getViewport({scale:1}); const vp=page.getViewport({scale:(w/v1.width)*dpr});
+      const cv=document.createElement('canvas'); cv.width=Math.floor(vp.width); cv.height=Math.floor(vp.height); cv.setAttribute('role','img'); cv.setAttribute('aria-label','Pagina '+i); box.appendChild(cv);
+      await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise; }
+  }catch(e){ if(ui.modal===m) box.innerHTML='<p class="muted">Het blad kan hier niet worden getoond. Gebruik “Openen in nieuw tabblad”.</p>'; }
+}
+async function openSheetFile(sh,returnTo){ if(!sh||!sh.pdf) return; if(!sh.pdf.path){ toast('Dit bestand staat nog in de oude app. Upload het opnieuw via Blad bewerken.','bad'); return; }
+  let url=''; try{ url=await fileUrl(sh.pdf); }catch(e){ toast('Het blad kon niet worden geopend.','bad'); return; }
+  openModal({kind:'pdf',title:sh.name,sub:typeOf(sh.typeId).name+(sh.question?' · '+sh.question:''),file:sh.pdf,url,returnTo}); }
+function fillMsg(q,t){
+  if(!q||!t) return ''; const p=num(t.players)||0; const price=num(q.price)||0;
+  const map={contact:t.captain||'',captain:t.captain||'',team:teamName(t),quiz:q.name,datum:fmtDate(q.date,{weekday:'long',day:'numeric',month:'long'}),tijd:q.start||'',locatie:q.venue||'',spelers:p,prijs:money(price),totaal:money(p*price),host:q.host||''};
+  let s=(q.msgTemplate||DEFAULT_MSG).replace(/\{(\w+)\}/g,(m,k)=>k in map?map[k]:m);
+  if(t.status==='wachtlijst') s+='\n\nLet op: jullie staan nog op de wachtlijst. We laten het weten zodra er plek is.';
+  return s;
+}
+
+/* ---------- actions ---------- */
+let pendingConfirm=null;
+function confirmBox(title,text,ok,fn){ pendingConfirm=fn; openModal({kind:'confirm',title,text,ok}); }
+function newRoundFromType(t){ return {id:uid(),typeId:t.id,title:t.name,qCount:t.q,pts:t.pts,dur:t.dur,breakAfter:0,questionIds:[],sheetId:''}; }
+function newQuiz(){
+  const d=new Date(); d.setDate(d.getDate()+((5-d.getDay()+7)%7||7));
+  const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const rounds=types().map(newRoundFromType); if(rounds.length>2) rounds[Math.floor(rounds.length/2)-1].breakAfter=10;
+  return {id:uid(),name:'Pubquiz '+fmtDate(iso,{day:'numeric',month:'long'}),date:iso,start:'20:00',venue:'',host:'',price:7,maxTeams:20,maxTeamSize:6,introMin:10,status:'gepland',
+    rounds,teams:[],scores:{},tiebreak:{question:'',answer:''},currentRound:'',msgTemplate:DEFAULT_MSG,createdAt:Date.now()};
+}
+function openQuizId(id){ ui.view='quiz'; ui.quizId=id; ui.tab='programma'; ui.standAfter=null; render(); window.scrollTo(0,0); }
+function createQuizFor(v,date){ const q=newQuiz(); q.date=date; q.venueId=v?v.id:''; q.venue=v?v.name:''; const r=(v&&v.recurring)||{};
+  if(r.start) q.start=r.start; if(num(r.price)!=null) q.price=num(r.price); if(num(r.maxTeams)!=null) q.maxTeams=num(r.maxTeams); if(r.host) q.host=r.host;
+  q.name='Pubquiz '+(v?v.name:'')+' · '+fmtDate(date,{day:'numeric',month:'short'}).replace('.','');
+  S.quizzes[q.id]=q; saveQuiz(q,0); return q; }
+function setPath(obj,path,v){ const ks=path.split('.'); let o=obj; for(let i=0;i<ks.length-1;i++){ if(o[ks[i]]==null||typeof o[ks[i]]!=='object') o[ks[i]]={}; o=o[ks[i]]; } o[ks[ks.length-1]]=v; }
+function val(el){ if(el.type==='checkbox') return el.checked; if(el.type==='number') return el.value===''?'':num(el.value); return el.value; }
+function teamStatusForNew(q){ return (num(q.maxTeams)&&activeTeams(q).length>=num(q.maxTeams))?'wachtlijst':'ingeschreven'; }
+function addTeam(q,t){ const team=Object.assign({id:uid(),name:'',captain:'',phone:'',email:'',players:num(q.maxTeamSize)||4,table:'',status:teamStatusForNew(q),paid:false,payMethod:'',checkedIn:false,tiebreak:'',notes:'',createdAt:Date.now()},t);
+  const used=(q.teams||[]).map(x=>num(x.table)).filter(x=>x!=null); if(team.table===''&&team.status==='ingeschreven'){ let n=1; while(used.includes(n)) n++; team.table=n; }
+  (q.teams=q.teams||[]).push(team); return team; }
+function blankItems(n){ return Array.from({length:n},()=>({p:'',a:''})); }
+
+async function exportFile(filename,content,mime){
+  try{ const url=URL.createObjectURL(new Blob([content],{type:mime})); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000); toast('Gedownload: '+filename); }
+  catch(e){ openModal({kind:'text',title:'Exporteren',filename,content}); }
+}
+function csvCell(v){ const s=String(v??''); return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
+function parseDelimited(text){
+  const lines=text.replace(/\r/g,'').split('\n').filter(l=>l.trim());
+  return lines.map(l=>{ const sep=l.includes('\t')?'\t':l.includes(';')?';':','; const out=[]; let cur='',inq=false;
+    for(let i=0;i<l.length;i++){ const c=l[i]; if(inq){ if(c==='"'&&l[i+1]==='"'){cur+='"';i++;} else if(c==='"') inq=false; else cur+=c; } else if(c==='"') inq=true; else if(c===sep){ out.push(cur.trim()); cur=''; } else cur+=c; }
+    out.push(cur.trim()); return out; });
+}
+function resolveType(s){ s=String(s||'').trim().toLowerCase(); if(!s) return null; const ts=types();
+  return (ts.find(t=>t.id===s)||ts.find(t=>t.name.toLowerCase()===s)||ts.find(t=>t.name.toLowerCase().includes(s)||s.includes(t.id))||{}).id||null; }
+async function copyText(text){ try{ await navigator.clipboard.writeText(text); toast('Gekopieerd'); return true; }catch(e){ toast('Kopiëren lukt hier niet: selecteer de tekst en kopieer handmatig.','bad'); return false; } }
+function moveRound(q,id,to){ const i=q.rounds.findIndex(r=>r.id===id); if(i<0||to<0||to>=q.rounds.length||to===i) return false; const [r]=q.rounds.splice(i,1); q.rounds.splice(to,0,r); saveQuiz(q); return true; }
+
+const A={
+  nav(el){ ui.view=el.dataset.v; render(); window.scrollTo(0,0); },
+  tab(el){ ui.tab=el.dataset.v; render(); },
+  openQuiz(el){ ui.view='quiz'; ui.quizId=el.dataset.id; ui.tab='programma'; ui.standAfter=null; render(); window.scrollTo(0,0); },
+  newQuiz(el){ if(S.readOnly) return persist('x'); openModal({kind:'newQuiz',draft:{date:(el&&el.dataset.date)||'',venueId:(el&&el.dataset.venue)||''}}); },
+  createQuiz(){ const d=ui.modal.draft; if(!d.date){ toast('Kies een datum','bad'); return; } if(!d.venueId){ toast('Kies een locatie of voeg er een toe','bad'); return; }
+    const v=S.venues[d.venueId]; const dup=Object.values(S.quizzes).find(q=>q.venueId===d.venueId&&q.date===d.date);
+    if(dup){ ui.modal=null; renderModal(); openQuizId(dup.id); toast('Op deze datum staat bij deze locatie al een quiz'); return; }
+    const q=createQuizFor(v,d.date); ui.modal=null; renderModal(); openQuizId(q.id); toast('Quizavond aangemaakt met alle vaste rondes'); },
+  planDate(el){ if(S.readOnly) return persist('x'); const v=S.venues[el.dataset.venue]; if(!v) return; const ex=Object.values(S.quizzes).find(q=>q.venueId===v.id&&q.date===el.dataset.date); if(ex){ openQuizId(ex.id); return; }
+    createQuizFor(v,el.dataset.date); render(); toast(`Ingepland: ${v.name}, ${fmtDate(el.dataset.date,{weekday:'long',day:'numeric',month:'long'})}`); },
+  planAll(el){ if(S.readOnly) return persist('x'); const v=S.venues[el.dataset.venue]; const ds=unplanned(v,3); ds.forEach(d=>createQuizFor(v,d)); render(); toast(ds.length?`${ds.length} avonden ingepland bij ${v.name}`:'Alles is al ingepland'); },
+  newVenue(el){ openModal({kind:'venue',draft:blankVenue(),returnTo:(ui.modal&&ui.modal.kind==='newQuiz')?ui.modal:null}); },
+  editVenue(el){ const v=S.venues[el.dataset.id]; openModal({kind:'venue',id:v.id,draft:Object.assign(blankVenue(),clone(v),{recurring:Object.assign(blankVenue().recurring,clone(v.recurring||{}))})}); },
+  toggleSkip(el){ const r=ui.modal.draft.recurring; const m=+el.dataset.m; r.skipMonths=r.skipMonths||[]; const i=r.skipMonths.indexOf(m); if(i>=0) r.skipMonths.splice(i,1); else r.skipMonths.push(m); renderModal(); },
+  saveVenue(){ const m=ui.modal; const d=m.draft; if(!String(d.name||'').trim()){ toast('Geef de locatie een naam','bad'); return; }
+    const id=m.id||uid(); const old=S.venues[id]||{};
+    S.venues[id]=Object.assign({},old,clone(d),{id,name:String(d.name).trim(),createdAt:old.createdAt||Date.now(),updatedAt:Date.now()});
+    if(!persist('venues/'+id,0)) return;
+    if(m.id){ for(const q of Object.values(S.quizzes)) if(q.venueId===id&&q.venue!==S.venues[id].name){ q.venue=S.venues[id].name; saveQuiz(q); } }
+    if(m.returnTo&&m.returnTo.kind==='newQuiz') m.returnTo.draft.venueId=id;
+    closeModal(); toast('Locatie opgeslagen'); },
+  askDelVenue(el){ const v=S.venues[el.dataset.id]; const n=Object.values(S.quizzes).filter(q=>q.venueId===v.id).length;
+    confirmBox('Locatie verwijderen?',`“${v.name}” wordt verwijderd${n?`. De ${n} quizavond(en) op deze locatie blijven bestaan, met de naam als tekst`:''}.`,'Verwijderen',()=>{ delete S.venues[v.id]; persist('venues/'+v.id,0); }); },
+  openQuizDirect(el){ openQuizId(el.dataset.id); },
+  pickDate(el){ ui.modal.draft.date=el.dataset.v; renderModal(); },
+  dupQuiz(){ const o=curQuiz(); const q=clone(o); q.id=uid(); q.name=o.name+' (kopie)'; q.teams=[]; q.scores={}; q.status='gepland'; q.currentRound=''; q.createdAt=Date.now(); q.tiebreak={question:'',answer:''};
+    q.rounds=q.rounds.map(r=>Object.assign(r,{id:uid(),questionIds:[],sheetId:''})); S.quizzes[q.id]=q; saveQuiz(q,0); ui.quizId=q.id; ui.tab='programma'; render(); toast('Gedupliceerd zonder aanmeldingen, scores en vragen'); },
+  askDelQuiz(){ const q=curQuiz(); confirmBox('Quizavond verwijderen?',`“${q.name}” met ${(q.teams||[]).length} aanmeldingen en alle scores wordt verwijderd. De vragen en vragenbladen blijven in de vragenbank staan.`,'Verwijderen',()=>{ delete S.quizzes[q.id]; persist('quizzes/'+q.id,0); ui.view='home'; }); },
+  addRound(el){ const q=curQuiz(); (q.rounds=q.rounds||[]).push(newRoundFromType(typeOf(el.dataset.id))); saveQuiz(q); render(); },
+  askDelRound(el){ const q=curQuiz(); const r=q.rounds.find(x=>x.id===el.dataset.id); confirmBox('Ronde verwijderen?',`“${r.title}” en de scores van deze ronde worden verwijderd.`,'Verwijderen',()=>{ q.rounds=q.rounds.filter(x=>x.id!==r.id); for(const t of Object.keys(q.scores||{})) delete q.scores[t][r.id]; saveQuiz(q); }); },
+  openPicker(el){ const q=curQuiz(); const r=q.rounds.find(x=>x.id===el.dataset.id); openModal({kind:'picker',roundId:r.id,sel:(r.questionIds||[]).slice(),search:''}); },
+  pickToggle(el){ const m=ui.modal; const id=el.dataset.id; const i=m.sel.indexOf(id); if(i>=0) m.sel.splice(i,1); else m.sel.push(id); renderModal(); },
+  pickRandom(){ const m=ui.modal; const q=curQuiz(); const r=q.rounds.find(x=>x.id===m.roundId); const U=usage(); const need=(num(r.qCount)||0)-m.sel.length; if(need<=0){ toast('Er zijn al genoeg vragen gekozen'); return; }
+    const pool=Object.values(S.questions).filter(x=>x.typeId===r.typeId&&!m.sel.includes(x.id)); const fresh=pool.filter(x=>!(U.q[x.id]||[]).length); const old=pool.filter(x=>(U.q[x.id]||[]).length);
+    const sh=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); const add=[...sh(fresh),...sh(old)].slice(0,need);
+    add.forEach(x=>m.sel.push(x.id)); renderModal(); toast(add.length<need?`${add.length} vragen toegevoegd; er zijn er niet meer van dit type`:`${add.length} vragen toegevoegd, ongebruikte eerst`); },
+  pickSave(){ const m=ui.modal; const q=curQuiz(); const r=q.rounds.find(x=>x.id===m.roundId); r.questionIds=m.sel.slice(); saveQuiz(q); ui.modal=null; renderModal(); render(); toast('Vragen opgeslagen'); },
+  newQuestionFromPicker(){ const m=ui.modal; const q=curQuiz(); const r=q.rounds.find(x=>x.id===m.roundId); openModal({kind:'question',draft:{typeId:r.typeId,prompt:'',answer:'',tagsText:'',diff:'',media:'',notes:''},returnTo:m}); },
+  close(){ closeModal(); },
+  scrim(el,e){ if(e.target===el) closeModal(); },
+  confirmOk(){ const fn=pendingConfirm; pendingConfirm=null; ui.modal=null; renderModal(); if(fn) fn(); render(); },
+  /* sheets */
+  newSheet(){ const tid=(ui.bank.type&&isSheet(ui.bank.type))?ui.bank.type:types().find(t=>isSheet(t.id))?.id; const t=typeOf(tid);
+    openModal({kind:'sheet',draft:{typeId:tid,name:'',question:'',items:blankItems(num(t.q)||10),tagsText:ui.bank.tag||'',diff:'',notes:'',paste:''}}); },
+  newSheetForRound(el){ const q=curQuiz(); const r=q.rounds.find(x=>x.id===el.dataset.id);
+    openModal({kind:'sheet',assignRound:r.id,draft:{typeId:r.typeId,name:'',question:'',items:blankItems(num(r.qCount)||10),tagsText:'',diff:'',notes:'',paste:''}}); },
+  editSheet(el){ const x=S.sheets[el.dataset.id]; if(!x) return; const its=(x.items||[]).map(i=>({p:i.p||'',a:i.a||''})); while(its.length<(num(typeOf(x.typeId).q)||0)) its.push({p:'',a:''});
+    openModal({kind:'sheet',id:x.id,draft:{typeId:x.typeId,name:x.name||'',question:x.question||'',items:its,tagsText:(x.tags||[]).join(', '),diff:x.diff??'',notes:x.notes||'',paste:'',pdf:x.pdf?clone(x.pdf):null}}); },
+  async viewDraftPdf(){ const m=ui.modal; const pf=m.draft.pdf; if(!pf||!pf.path) return; let url=''; try{ url=await fileUrl(pf); }catch(e){ toast('Het blad kon niet worden geopend.','bad'); return; } openModal({kind:'pdf',title:m.draft.name||'Vragenblad',file:pf,url,returnTo:m}); },
+  removeDraftPdf(){ ui.modal.draft.pdf=null; renderModal(); },
+  viewSheetPdf(el){ openSheetFile(S.sheets[el.dataset.id]); },
+  sheetAddRow(){ ui.modal.draft.items.push({p:'',a:''}); renderModal(); const k=ui.modal.draft.items.length-1; const el=$('#m-ia-'+k); if(el) el.focus(); },
+  sheetDelRow(el){ ui.modal.draft.items.splice(+el.dataset.i,1); renderModal(); },
+  togglePaste(){ ui.modal.pasteOpen=!ui.modal.pasteOpen; renderModal(); },
+  sheetPaste(){ const d=ui.modal.draft; let rows=String(d.paste||'').replace(/\r/g,'').split('\n').map(l=>l.trim()).filter(Boolean);
+    if(isList(d.typeId)) rows=rows.flatMap(l=>l.split(/[,;\t]/)).map(x=>x.trim()).filter(Boolean).map(x=>';'+x);
+    if(!rows.length){ toast('Plak eerst een of meer regels','bad'); return; }
+    rows.forEach(l=>{ const parts=l.includes('\t')?l.split('\t'):l.includes(';')?l.split(';'):[l]; const it=parts.length>1?{p:parts[0].trim(),a:parts.slice(1).join(' ').trim()}:{p:'',a:parts[0].trim()};
+      const empty=d.items.find(x=>!String(x.a||'').trim()&&!String(x.p||'').trim()); if(empty) Object.assign(empty,it); else d.items.push(it); });
+    d.paste=''; ui.modal.pasteOpen=false; renderModal(); toast(`${rows.length} regels toegevoegd`); },
+  saveSheet(){ const m=ui.modal; const d=m.draft;
+    if(isList(d.typeId)){ if(!String(d.question||'').trim()){ toast('Vul de vraag in, bijvoorbeeld: Noem de 10 grootste schoenmerken','bad'); return; } if(!String(d.name||'').trim()) d.name=String(d.question).trim().replace(/^noem (de )?/i,'').replace(/[.?!]$/,'').slice(0,60); }
+    if(!String(d.name||'').trim()){ toast('Geef het vragenblad een naam, bijvoorbeeld Hoofdsteden','bad'); return; }
+    const items=d.items.map(i=>({p:String(i.p||'').trim(),a:String(i.a||'').trim()})).filter(i=>i.a||i.p);
+    if(!items.length){ toast('Vul minstens één antwoord in','bad'); return; }
+    const id=m.id||uid(); const old=S.sheets[id]||{};
+    if(m.uploading){ toast('Wacht tot het uploaden klaar is','bad'); return; }
+    S.sheets[id]={...old,id,typeId:d.typeId,name:String(d.name).trim(),question:String(d.question||'').trim(),items,tags:splitTags(d.tagsText),diff:num(d.diff)??'',notes:d.notes||'',pdf:d.pdf||null,createdAt:old.createdAt||Date.now(),updatedAt:Date.now()};
+    if(!persist('sheets/'+id,0)) return;
+    m.saved=true; const keep=d.pdf&&(d.pdf.path||d.pdf.id); (m.newUploads||[]).filter(x=>x!==keep).forEach(dropAsset); if(old.pdf&&old.pdf.path&&old.pdf.path!==keep) dropAsset(old.pdf.path);
+    if(m.assignRound){ const q=curQuiz(); const r=q&&q.rounds.find(x=>x.id===m.assignRound); if(r&&r.typeId===d.typeId){ r.sheetId=id; r.qCount=items.length; saveQuiz(q); } }
+    closeModal(); toast('Vragenblad opgeslagen'); },
+  askDelSheet(el){ const x=S.sheets[el.dataset.id]; const u=usage().s[x.id];
+    confirmBox('Vragenblad verwijderen?',`“${x.name}”${u?` wordt ook uit ${u.length} quizavond(en) gehaald.`:' wordt definitief verwijderd.'}`,'Verwijderen',()=>{
+      if(u) for(const q of Object.values(S.quizzes)){ let ch=false; (q.rounds||[]).forEach(r=>{ if(r.sheetId===x.id){ r.sheetId=''; ch=true; } }); if(ch) saveQuiz(q); }
+      if(x.pdf&&x.pdf.path) dropAsset(x.pdf.path); delete S.sheets[x.id]; persist('sheets/'+x.id,0); }); },
+  /* teams */
+  tgl(el){ const q=curQuiz(); const t=q.teams.find(x=>x.id===el.dataset.id); t[el.dataset.k]=!t[el.dataset.k]; saveQuiz(q); render();
+    if(el.dataset.k==='checkedIn'&&t.checkedIn&&!t.name){ const n=$('#tn-'+t.id); if(n){ n.focus(); toast('Vul de teamnaam in'); } } },
+  editTeam(el){ const q=curQuiz(); const t=q.teams.find(x=>x.id===el.dataset.id); openModal({kind:'team',id:t.id,draft:clone(t)}); },
+  saveTeam(){ const m=ui.modal; const q=curQuiz(); const t=q.teams.find(x=>x.id===m.id); if(!String(m.draft.captain||'').trim()&&!String(m.draft.name||'').trim()){ toast('Vul een contactpersoon of teamnaam in','bad'); return; } Object.assign(t,m.draft); saveQuiz(q); ui.modal=null; renderModal(); render(); },
+  askDelTeam(el){ const q=curQuiz(); const t=q.teams.find(x=>x.id===el.dataset.id); confirmBox('Aanmelding verwijderen?',`De aanmelding van ${t.captain||teamName(t)} en de scores van dit team worden verwijderd. Wil je alleen afmelden? Zet dan de status op afgemeld.`,'Verwijderen',()=>{ q.teams=q.teams.filter(x=>x.id!==t.id); if(q.scores) delete q.scores[t.id]; saveQuiz(q); }); },
+  importTeams(){ openModal({kind:'importTeams',text:''}); },
+  doImportTeams(){ const q=curQuiz(); const rows=parseDelimited(ui.modal.text||''); let n=0,w=0;
+    rows.forEach(c=>{ if(!c[0]) return; const t=addTeam(q,{captain:c[0],players:num(c[1])||num(q.maxTeamSize)||4,phone:c[2]||'',email:c[3]||''}); n++; if(t.status==='wachtlijst') w++; });
+    if(!n){ toast('Geen aanmeldingen gevonden in de tekst','bad'); return; } saveQuiz(q); ui.modal=null; renderModal(); render(); toast(`${n} aanmeldingen toegevoegd${w?`, waarvan ${w} op de wachtlijst`:''}`); },
+  teamMsg(el){ openModal({kind:'msg',teamId:el.dataset.id}); },
+  copyMsg(){ const q=curQuiz(); const t=q.teams.find(x=>x.id===ui.modal.teamId); copyText(fillMsg(q,t)); },
+  editMsgTpl(){ const q=curQuiz(); const back=ui.modal&&ui.modal.kind==='msg'?ui.modal:null; openModal({kind:'msgTpl',text:q.msgTemplate||DEFAULT_MSG,returnTo:back}); },
+  saveTpl(){ const q=curQuiz(); q.msgTemplate=ui.modal.text; saveQuiz(q); closeModal(); toast('Berichttekst opgeslagen'); },
+  /* stand */
+  readOrder(el){ ui.readOrder=el.dataset.v==='1'; render(); },
+  exportStand(el){ const q=curQuiz(); const i=+el.dataset.i; const st=standings(q,i); const rs=q.rounds.slice(0,i+1);
+    const lines=[['Positie','Team','Contactpersoon',...rs.map((r,k)=>'R'+(k+1)+' '+r.title),'Totaal','Shoot-out'].map(csvCell).join(';'),...st.map(r=>[r.rank,teamName(r.t),r.t.captain||'',...r.per.map(p=>p==null?'':String(p).replace('.',',')),String(r.total).replace('.',','),r.t.tiebreak??''].map(csvCell).join(';'))];
+    exportFile(`stand-${(q.name||'quiz').toLowerCase().replace(/[^a-z0-9]+/g,'-')}-na-ronde-${i+1}.csv`,'﻿'+lines.join('\n'),'text/csv'); },
+  /* bank */
+  bankKind(el){ ui.bank.kind=el.dataset.v; ui.bank.type=''; ui.bank.tag=''; ui.bank.limit=80; render(); },
+  bankType(el){ ui.bank.type=el.dataset.v; ui.bank.limit=80; render(); },
+  bankTag(el){ ui.view='bank'; ui.bank.tag=ui.bank.tag===el.dataset.v?'':el.dataset.v; ui.bank.limit=80; render(); },
+  bankReset(){ ui.bank=Object.assign(ui.bank,{q:'',type:'',tag:'',diff:'',usage:'',limit:80}); render(); },
+  bankMore(){ ui.bank.limit+=100; render(); },
+  newQuestion(){ const tid=(ui.bank.type&&formatOf(ui.bank.type)==='los')?ui.bank.type:types().find(t=>formatOf(t.id)==='los')?.id; openModal({kind:'question',draft:{typeId:tid,prompt:'',answer:'',tagsText:ui.bank.tag||'',diff:'',media:'',notes:'',again:false}}); },
+  editQuestion(el){ const x=S.questions[el.dataset.id]; openModal({kind:'question',id:x.id,draft:{typeId:x.typeId,prompt:x.prompt||'',answer:x.answer||'',fact:x.fact||'',tagsText:(x.tags||[]).join(', '),diff:x.diff??'',media:x.media||'',notes:x.notes||''}}); },
+  saveQuestion(){ const m=ui.modal; const d=m.draft; if(!String(d.prompt||'').trim()||!String(d.answer||'').trim()){ toast('Vul zowel de vraag als het antwoord in','bad'); return; }
+    const id=m.id||uid(); const old=S.questions[id]||{};
+    S.questions[id]={...old,id,typeId:d.typeId,prompt:String(d.prompt).trim(),answer:String(d.answer).trim(),fact:String(d.fact||'').trim(),tags:splitTags(d.tagsText),diff:num(d.diff)??'',media:d.media||'',notes:d.notes||'',createdAt:old.createdAt||Date.now(),updatedAt:Date.now()};
+    if(!persist('questions/'+id,0)) return;
+    if(m.returnTo&&m.returnTo.kind==='picker'&&!m.id) m.returnTo.sel.push(id);
+    if(!m.id&&d.again){ openModal({kind:'question',draft:{typeId:d.typeId,prompt:'',answer:'',tagsText:d.tagsText,diff:d.diff,media:'',notes:'',again:true},returnTo:m.returnTo}); toast('Vraag opgeslagen'); render(); return; }
+    closeModal(); toast('Vraag opgeslagen'); },
+  askDelQuestion(el){ const x=S.questions[el.dataset.id]; const u=usage().q[x.id];
+    confirmBox('Vraag verwijderen?',`“${x.prompt}”${u?` wordt ook uit ${u.length} quizavond(en) gehaald.`:' wordt definitief verwijderd.'}`,'Verwijderen',()=>{
+      if(u) for(const q of Object.values(S.quizzes)){ let ch=false; (q.rounds||[]).forEach(r=>{ const n=(r.questionIds||[]).filter(i=>i!==x.id); if(n.length!==(r.questionIds||[]).length){ r.questionIds=n; ch=true; } }); if(ch) saveQuiz(q); }
+      delete S.questions[x.id]; persist('questions/'+x.id,0); }); },
+  importQ(){ openModal({kind:'importQ',text:''}); },
+  async doImportQ(){ const m=ui.modal; const fileEl=$('#m-file'); let text=m.text||''; let isJson=false;
+    if(fileEl&&fileEl.files&&fileEl.files[0]){ text=await fileEl.files[0].text(); isJson=/\.json$/i.test(fileEl.files[0].name); }
+    text=text.replace(/^﻿/,''); if(!text.trim()){ toast('Plak eerst regels of kies een bestand','bad'); return; }
+    if(isJson||text.trim().startsWith('{')){ let data; try{ data=JSON.parse(text); }catch(e){ toast('Dit bestand is geen geldige back-up','bad'); return; }
+      const paths=[]; for(const col of ['questions','sheets','venues','quizzes']) for(const [id,x] of Object.entries(data[col]||{})){ S[col][id]=Object.assign({},x,{id}); paths.push(col+'/'+id); }
+      if(Array.isArray(data.types)&&data.types.length){ S.types=data.types; paths.push('settings/types'); }
+      ui.modal=null; renderModal(); render(); toast(`Back-up wordt teruggezet (${paths.length} onderdelen)…`); await writeMany(paths); render(); toast('Back-up teruggezet'); return; }
+    const rows=parseDelimited(text); const paths=[]; let skipped=0,nq=0; const sheetsNew={};
+    rows.forEach((c,i)=>{ if(i===0&&/vraag|antwoord|bladnaam/i.test(c.join(' '))&&/ronde/i.test(c[0]||'')) return;
+      const typeId=resolveType(c[0]); if(!typeId){ skipped++; return; }
+      if(isSheet(typeId)){ const name=c[1]; const ans=c[3]||(c.length===3?c[2]:''); if(!name||!ans){ skipped++; return; }
+        const key=typeId+'|'+name.toLowerCase();
+        let sh=sheetsNew[key]||Object.values(S.sheets).find(s=>s.typeId===typeId&&(s.name||'').toLowerCase()===name.toLowerCase());
+        if(!sh){ sh={id:uid()+i,typeId,name,question:'',items:[],tags:[],diff:'',notes:'',createdAt:Date.now()}; S.sheets[sh.id]=sh; }
+        sheetsNew[key]=sh; sh.items=(sh.items||[]).concat([{p:c.length>3?(c[2]||''):'',a:ans}]); sh.tags=[...new Set([...(sh.tags||[]),...splitTags(c[4])])];
+      } else { if(!c[1]||!c[2]){ skipped++; return; }
+        const id=uid()+i; S.questions[id]={id,typeId,prompt:c[1],answer:c[2],tags:splitTags(c[3]),diff:num(c[4])??'',fact:c[5]||'',media:c[6]||'',notes:c[7]||'',createdAt:Date.now()-i}; paths.push('questions/'+id); nq++; } });
+    Object.values(sheetsNew).forEach(s=>paths.push('sheets/'+s.id));
+    if(!paths.length){ toast('Niets herkend. Controleer de kolomvolgorde (zie uitleg).','bad'); return; }
+    ui.modal=null; renderModal(); render(); await writeMany(paths); render();
+    const ns=Object.keys(sheetsNew).length; toast(`${ns?ns+' vragenbladen':''}${ns&&nq?' en ':''}${nq?nq+' losse vragen':''} geïmporteerd${skipped?`, ${skipped} regels overgeslagen`:''}`); },
+  exportCsv(){ let lines;
+    if(ui.bank.kind==='blad'){ lines=[['ronde','bladnaam','vraag of hint','antwoord','tags'].join(';')]; bankFiltered().forEach(s=>sheetItems(s).forEach(it=>lines.push([typeOf(s.typeId).name,s.name,it.p,it.a,(s.tags||[]).join(', ')].map(csvCell).join(';')))); exportFile('vragenbladen.csv','﻿'+lines.join('\n'),'text/csv'); }
+    else { lines=[['ronde','vraag','antwoord','tags','moeilijkheid','feitje','bron','notities'].join(';'),...bankFiltered().map(x=>[typeOf(x.typeId).name,x.prompt,x.answer,(x.tags||[]).join(', '),x.diff,x.fact,x.media,x.notes].map(csvCell).join(';'))]; exportFile('losse-vragen.csv','﻿'+lines.join('\n'),'text/csv'); } },
+  backup(){ const strip=o=>Object.fromEntries(Object.entries(o).map(([k,v])=>{const c=clone(v); delete c.id; return [k,c];}));
+    const data={app:'quizcentrale',version:2,exportedAt:new Date().toISOString(),types:types(),questions:strip(S.questions),sheets:strip(S.sheets),venues:strip(S.venues),quizzes:strip(S.quizzes)};
+    exportFile(`quizcentrale-backup-${todayISO()}.json`,JSON.stringify(data,null,1),'application/json'); },
+  /* types */
+  addType(){ S.types=clone(types()); const n=S.types.length; S.types.push({id:'type-'+uid(),name:'Nieuwe ronde',format:'blad',desc:'',q:10,pts:1,dur:15,medium:'',promptLabel:'Vraag',answerLabel:'Antwoord',color:n%6}); persist('settings/types'); render(); },
+  askDelType(el){ const i=+el.dataset.i; const t=types()[i]; confirmBox('Rondetype verwijderen?',`“${t.name}” verdwijnt uit de lijst. Bestaande quizavonden houden hun rondes.`,'Verwijderen',()=>{ S.types=clone(types()); S.types.splice(i,1); persist('settings/types',0); }); },
+  /* misc */
+  loadSample(){ toast('Voorbeelddata is in deze versie niet beschikbaar','bad'); },
+  async logout(){ try{ if(rtChannel) await sb.removeChannel(rtChannel); await sb.auth.signOut(); }catch(e){} location.reload(); },
+  loginAgain(){ ui_login.sent=false; ui_login.err=''; render(); },
+  goLocal(){ S.readOnly=false; S.mode='local'; lsSave(); render(); toast('Kopie gemaakt. Je werkt nu op dit apparaat.'); },
+  copyText(){ const ta=$('#m-textout'); if(ta) ta.select(); copyText(ui.modal.content); },
+};
+async function loadSample(){
+  let data; try{ data=JSON.parse(($('#sample-data')||{}).textContent||''); }catch(e){ return; }
+  const paths=[];
+  for(const col of ['questions','sheets','venues','quizzes']) for(const x of (data[col]||[])){ const {id,...rest}=x; S[col][id]=Object.assign({},rest,{id}); paths.push(col+'/'+id); }
+  render(); toast('Voorbeelddata laden…'); await writeMany(paths); render(); toast('Voorbeelddata geladen. Alles is gemarkeerd met #voorbeeld.');
+}
+
+/* ---------- drag & drop rounds (pointer events: mouse + touch) ---------- */
+let drag=null;
+document.addEventListener('pointerdown',e=>{
+  const h=e.target.closest('.drag-h'); if(!h||S.readOnly) return;
+  const item=h.closest('.round-item'); const list=$('#rounds-list'); if(!item||!list) return;
+  e.preventDefault(); try{ h.setPointerCapture(e.pointerId); }catch(x){}
+  drag={item,list,id:item.dataset.rid,moved:false,startY:e.clientY};
+  item.classList.add('dragging');
+});
+document.addEventListener('pointermove',e=>{
+  if(!drag) return; const y=e.clientY; if(Math.abs(y-drag.startY)>3) drag.moved=true;
+  const items=[...drag.list.querySelectorAll('.round-item')].filter(x=>x!==drag.item);
+  let before=null; for(const it of items){ const r=it.getBoundingClientRect(); if(y<r.top+r.height/2){ before=it; break; } }
+  if(before){ if(drag.item.nextElementSibling!==before) drag.list.insertBefore(drag.item,before); } else if(drag.list.lastElementChild!==drag.item) drag.list.appendChild(drag.item);
+  if(y<70) window.scrollBy(0,-12); else if(y>window.innerHeight-50) window.scrollBy(0,12);
+});
+function endDrag(){
+  if(!drag) return; const d=drag; drag=null; d.item.classList.remove('dragging');
+  const q=curQuiz(); if(!q) return;
+  const order=[...d.list.querySelectorAll('.round-item')].map(x=>x.dataset.rid);
+  const before=q.rounds.map(r=>r.id).join(',');
+  if(order.join(',')!==before){ const map=Object.fromEntries(q.rounds.map(r=>[r.id,r])); q.rounds=order.map(id=>map[id]).filter(Boolean); saveQuiz(q); toast('Volgorde aangepast'); }
+  render();
+}
+document.addEventListener('pointerup',endDrag);
+document.addEventListener('pointercancel',endDrag);
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-a]'); if(!el) return;
+  const a=el.dataset.a; if(!A[a]) return;
+  if(el.tagName==='INPUT'&&el.type==='checkbox'){ A[a](el,e); return; }
+  if(a!=='scrim') e.preventDefault();
+  A[a](el,e);
+});
+document.addEventListener('submit',e=>{
+  const f=e.target; e.preventDefault();
+  if(f.dataset.form==='login'){ const email=String(($('#login-email')||{}).value||'').trim(); if(!email) return;
+    ui_login.email=email; ui_login.busy=true; ui_login.err=''; render();
+    sb.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:location.origin+location.pathname}}).then(({error})=>{
+      ui_login.busy=false;
+      if(error){ ui_login.err=/signups? not allowed|not found|otp_disabled/i.test(error.message)?'Dit e-mailadres heeft nog geen toegang. Vraag de beheerder om een uitnodiging.':/rate|seconds/i.test(error.message)?'Er zijn net al een paar mails verstuurd. Wacht een minuut en probeer het opnieuw.':'Versturen lukte niet: '+error.message; }
+      else ui_login.sent=true; render(); });
+    return; }
+  if(f.dataset.form==='quickTeam'){ const q=curQuiz(); const fd=new FormData(f); const cap=String(fd.get('captain')||ui.qt.captain||'').trim();
+    if(!cap){ toast('Vul de naam van de contactpersoon in','bad'); const n=$('#nt-cap'); if(n) n.focus(); return; }
+    const t=addTeam(q,{captain:cap,players:num(fd.get('players'))||num(q.maxTeamSize)||4,phone:String(fd.get('phone')||'').trim(),email:String(fd.get('email')||'').trim()});
+    if(!saveQuiz(q,0)){ q.teams.pop(); return; } ui.qt={captain:'',players:'',phone:'',email:''}; render(); const n=$('#nt-cap'); if(n) n.focus();
+    toast(t.status==='wachtlijst'?`${cap} staat op de wachtlijst (avond is vol)`:`${cap} aangemeld, tafel ${t.table}`); }
+});
+function applyBind(el){
+  const q=curQuiz(); const v=val(el);
+  if(el.dataset.q!=null){ setPath(q,el.dataset.q,v); if(el.dataset.q==='venueId'){ const vv=S.venues[v]; if(vv) q.venue=vv.name; } saveQuiz(q); return true; }
+  if(el.dataset.r!=null){ const [rid,k]=el.dataset.r.split('.'); const r=q.rounds.find(x=>x.id===rid); if(r){ r[k]=v;
+      if(k==='sheetId'&&v&&S.sheets[v]){ const n=sheetItems(S.sheets[v]).length; if(n) r.qCount=n; }
+      saveQuiz(q); } return true; }
+  if(el.dataset.t!=null){ const [tid,k]=el.dataset.t.split('.'); const t=q.teams.find(x=>x.id===tid); if(t){ t[k]=v; saveQuiz(q); } return true; }
+  if(el.dataset.ty!=null){ const [i,k]=el.dataset.ty.split('.'); S.types=clone(types()); S.types[+i][k]=k==='color'?+v:v; persist('settings/types'); return true; }
+  if(el.dataset.ui!=null){ const k=el.dataset.ui; if(k==='standAfter') ui.standAfter=+v; else if(k==='hideAnswers') ui.hideAnswers=!!v; else setPath(ui,k,v); return true; }
+  return false;
+}
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.dataset.m!=null){ if(!ui.modal) return; if(ui.modal.draft&&el.dataset.m!=='search'&&el.dataset.m!=='text') setPath(ui.modal.draft,el.dataset.m,val(el)); else ui.modal[el.dataset.m]=val(el);
+    if(el.dataset.rr) renderModal(); else if(ui.modal.kind==='sheet'&&/^items\.\d+\.a$/.test(el.dataset.m)){ const g=$('#modal-root .grow b'); if(g) g.textContent=ui.modal.draft.items.filter(it=>String(it.a||'').trim()).length; } return; }
+  if(el.dataset.s!=null){ if(el.validity&&el.validity.badInput) return; const q=curQuiz(); const [tid,rid]=el.dataset.s.split('|'); q.scores=q.scores||{}; q.scores[tid]=q.scores[tid]||{}; const v=num(el.value); if(v==null) delete q.scores[tid][rid]; else q.scores[tid][rid]=v; saveQuiz(q,700);
+    el.classList.toggle('over',v!=null&&(v<0||v>(+el.max||Infinity))); return; }
+  if(el.dataset.qt!=null){ ui.qt[el.dataset.qt]=el.value; return; }
+  if(el.dataset.lg!=null){ ui_login[el.dataset.lg]=el.value; return; }
+  if(el.type==='checkbox'||el.tagName==='SELECT') return;
+  if(el.dataset.ui!=null){ applyBind(el); ui.bank.limit=80; render(); return; }
+  applyBind(el);
+});
+document.addEventListener('change',e=>{
+  const el=e.target;
+  if(el.dataset.upload==='sheet'){ uploadSheetFile(el.files&&el.files[0]); return; }
+  if(el.dataset.m!=null){ if(!ui.modal) return; if(ui.modal.draft&&el.dataset.m!=='search'&&el.dataset.m!=='text') setPath(ui.modal.draft,el.dataset.m,val(el)); else ui.modal[el.dataset.m]=val(el); if(el.dataset.rr) renderModal(); return; }
+  const bound=['q','r','t','ty','ui','s'].some(k=>el.dataset[k]!=null);
+  if(!bound) return;
+  if(el.type==='checkbox'||el.tagName==='SELECT'){ applyBind(el); renderSafe(); return; }
+  renderSafe();
+});
+/* Re-render pas na een klik: anders vervangt de nieuwe opmaak de knop waar je net op drukte */
+let ptrDown=false,deferredRender=false;
+document.addEventListener('pointerdown',()=>{ ptrDown=true; },true);
+function releasePtr(){ ptrDown=false; if(deferredRender) setTimeout(()=>{ if(deferredRender){ deferredRender=false; if(editingInApp()) pendingRender=true; else render(); } },0); }
+document.addEventListener('pointerup',releasePtr,true);
+document.addEventListener('pointercancel',releasePtr,true);
+function renderSafe(){ if(ptrDown){ deferredRender=true; return; } render(); }
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&ui.modal){ closeModal(); return; }
+  const el=e.target;
+  if(el.classList&&el.classList.contains('drag-h')&&(e.key==='ArrowUp'||e.key==='ArrowDown')){ e.preventDefault(); const q=curQuiz(); const id=el.dataset.rid; const i=q.rounds.findIndex(r=>r.id===id);
+    if(moveRound(q,id,i+(e.key==='ArrowUp'?-1:1))){ render(); const h=document.querySelector(`.drag-h[data-rid="${id}"]`); if(h) h.focus(); } return; }
+  if(e.key==='Enter'&&el.classList&&el.classList.contains('score-in')){ e.preventDefault(); const r=+el.dataset.row+(e.shiftKey?-1:1), c=+el.dataset.col;
+    const nx=document.querySelector(`.score-in[data-row="${r}"][data-col="${c}"]`)||document.querySelector(`.score-in[data-row="0"][data-col="${c+1}"]`); if(nx){ nx.focus(); nx.select(); } }
+});
+let toastT=null;
+function toast(msg,kind){ const t=$('#toast'); t.textContent=msg; t.className=kind||''; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>{t.hidden=true;},3200); }
+boot();
+</script>
+</body>
+</html>
