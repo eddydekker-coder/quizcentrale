@@ -670,13 +670,11 @@ function tabTeams(q){
     <td><input class="namein" id="tn-${t.id}" type="text" data-t="${t.id}.name" value="${esc(t.name||'')}" placeholder="Bedenken ze ter plekke" aria-label="Teamnaam"></td>
     <td><input id="tp-${t.id}" type="number" min="1" data-t="${t.id}.players" value="${esc(t.players??'')}" aria-label="Spelers" style="width:58px;${maxSize&&num(t.players)>maxSize?'border-color:var(--bad)':''}"></td>
     <td><select id="ts-${t.id}" data-t="${t.id}.status" aria-label="Status">${['ingeschreven','wachtlijst','afgemeld'].map(s=>`<option ${t.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
-    <td><button class="toggle ${t.paid?'on':''}" data-a="tgl" data-id="${t.id}" data-k="paid">${t.paid?'Betaald':'Open'}</button></td>
     <td><button class="toggle ${t.checkedIn?'on':''}" data-a="tgl" data-id="${t.id}" data-k="checkedIn">${t.checkedIn?'Binnen':'Nog niet'}</button></td>
     <td class="r"><div class="row" style="gap:2px;justify-content:flex-end;flex-wrap:nowrap"><button class="btn btn-icon" title="Bevestigingsbericht" aria-label="Bevestigingsbericht" data-a="teamMsg" data-id="${t.id}">${I.copy}</button><button class="btn btn-icon" title="Bewerken" aria-label="Bewerken" data-a="editTeam" data-id="${t.id}">${I.edit}</button><button class="btn btn-icon btn-danger" title="Verwijderen" aria-label="Verwijderen" data-a="askDelTeam" data-id="${t.id}">${I.del}</button></div></td></tr>`).join('');
   return `<div class="stats">
     <div class="stat"><span>Aanmeldingen</span><b class="num">${act.length}${q.maxTeams?'<span class="muted" style="font-size:1rem">/'+esc(q.maxTeams)+'</span>':''}</b><small>${wait} op de wachtlijst</small></div>
     <div class="stat"><span>Spelers</span><b class="num">${players}</b><small>max ${esc(q.maxTeamSize||'–')} per team</small></div>
-    <div class="stat"><span>Betaald</span><b class="num">${money(paid)}</b><small>van ${money(due)} verwacht</small></div>
     <div class="stat"><span>Ingecheckt</span><b class="num">${inn}/${act.length}</b><small>${named} met teamnaam</small></div></div>
   <form class="card-flat row" data-form="quickTeam" style="align-items:flex-end">
     <label class="field" style="flex:2;min-width:180px"><span>Contactpersoon</span><input id="nt-cap" type="text" name="captain" data-qt="captain" value="${esc(ui.qt.captain)}" placeholder="Naam van wie aanmeldt"></label>
@@ -687,7 +685,7 @@ function tabTeams(q){
     <button class="btn" type="button" data-a="importTeams">Lijst plakken</button>
     <button class="btn" type="button" data-a="editMsgTpl">Berichttekst</button>
   </form>
-  ${all.length?`<p class="small muted">Teams melden zich aan op naam van een contactpersoon. De teamnaam vul je op de avond zelf in.</p><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Tafel</th><th>Contactpersoon</th><th>Teamnaam</th><th>Spelers</th><th>Status</th><th>Betaling</th><th>Check-in</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
+  ${all.length?`<p class="small muted">Teams melden zich aan op naam van een contactpersoon. De teamnaam vul je op de avond zelf in.</p><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Tafel</th><th>Contactpersoon</th><th>Teamnaam</th><th>Spelers</th><th>Status</th><th>Check-in</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
   :'<p class="muted">Nog geen aanmeldingen. Vul hierboven de naam van de contactpersoon in, of plak een lijst uit WhatsApp of e-mail.</p>'}`;
 }
 
@@ -699,7 +697,7 @@ function tabScores(q){
   const head=rs.map((r,i)=>`<th class="r ${q.currentRound===r.id?'curcol':''}" title="${esc(r.title)}">R${i+1} ${esc((r.title||'').slice(0,14))}<br><span style="text-transform:none;letter-spacing:0;font-weight:500">max ${fmt(roundMax(r))}</span></th>`).join('');
   const body=ts.map((t,ti)=>`<tr><td class="c"><span class="rank">${rk[t.id]?.rank??''}</span></td><td><div class="tname ${t.name?'':'ph'}">${esc(teamName(t))}</div><div class="small muted">${t.table?'Tafel '+esc(t.table):''}</div></td>
     ${rs.map((r,ri)=>{ const v=rawScore(q,t,r); const over=v!=null&&(v>roundMax(r)||v<0);
-      return `<td class="r ${q.currentRound===r.id?'curcol':''}"><input class="score-in ${over?'over':''}" id="s-${t.id}-${r.id}" data-s="${t.id}|${r.id}" data-row="${ti}" data-col="${ri}" type="number" inputmode="decimal" step="0.5" min="0" max="${roundMax(r)}" value="${v??''}" aria-label="${esc(teamName(t))} ronde ${ri+1}"></td>`; }).join('')}
+      return `<td class="r ${q.currentRound===r.id?'curcol':''}"><input class="score-in ${over?'over':''}" id="s-${t.id}-${r.id}" data-s="${t.id}|${r.id}" data-row="${ti}" data-col="${ri}" type="number" inputmode="decimal" enterkeyhint="next" step="0.5" min="0" max="${roundMax(r)}" value="${v??''}" aria-label="${esc(teamName(t))} ronde ${ri+1}"></td>`; }).join('')}
     <td class="r total">${fmt(rk[t.id]?.total)}</td>
     <td class="r"><input id="so-${t.id}" type="number" step="any" data-t="${t.id}.tiebreak" value="${esc(t.tiebreak??'')}" aria-label="Shoot-out ${esc(teamName(t))}" style="width:100px"></td></tr>`).join('');
   const foot=rs.map(r=>{ const vals=ts.map(t=>rawScore(q,t,r)).filter(v=>v!=null); const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
@@ -717,7 +715,7 @@ function tabStand(q){
   const st=standings(q,after); const prev=after>0?standings(q,after-1):null; const pr={}; if(prev) prev.forEach(r=>pr[r.t.id]=r.rank);
   const lead=st[0]?.total||0; const isFinal=after===rs.length-1;
   const controls=`<div class="spread"><label class="field" style="min-width:220px"><span>Stand na</span><select id="stand-after" data-ui="standAfter">${rs.map((r,i)=>`<option value="${i}" ${i===after?'selected':''}>Ronde ${i+1}: ${esc(r.title)}${i===rs.length-1?' (eindstand)':''}</option>`).join('')}</select></label>
-    <div class="row"><div class="seg" role="group" aria-label="Weergave"><button aria-pressed="${!ui.readOrder}" data-a="readOrder" data-v="0">Tabel</button><button aria-pressed="${ui.readOrder}" data-a="readOrder" data-v="1">Voorlezen</button></div><button class="btn" data-a="exportStand" data-i="${after}">${I.dl}CSV</button></div></div>`;
+    <div class="row"><div class="seg" role="group" aria-label="Weergave"><button aria-pressed="${!ui.readOrder}" data-a="readOrder" data-v="0">Tabel</button><button aria-pressed="${ui.readOrder}" data-a="readOrder" data-v="1">Voorlezen</button></div></div></div>`;
   if(ui.readOrder){
     const rev=st.slice().reverse();
     return `${controls}<p class="muted">Voorleesvolgorde: van de laatste naar de eerste plaats.</p><div class="readout">${rev.map(r=>`<div class="${r.rank<=3?'top3':''}"><span class="pl">${r.rank}e</span><span class="nm">${esc(teamName(r.t))}${r.soUsed?' <span class="chip c4">shoot-out</span>':''}</span><span class="pt">${fmt(r.total)}</span></div>`).join('')}</div>`;
@@ -811,43 +809,43 @@ function matchCommon(x,b,used){
 }
 function bankFiltered(){
   const b=ui.bank; const U=usage(); const qs=b.q.trim().toLowerCase();
-  if(b.kind==='blad') return Object.values(S.sheets).filter(x=>matchCommon(x,b,U.s[x.id])&&(!qs||((x.name||'')+' '+(x.question||'')+' '+(x.tags||[]).join(' ')+' '+(x.items||[]).map(i=>(i.p||'')+' '+(i.a||'')).join(' ')).toLowerCase().includes(qs))).sort((a,c)=>(a.name||'').localeCompare(c.name||'','nl'));
-  return Object.values(S.questions).filter(x=>matchCommon(x,b,U.q[x.id])&&(!qs||((x.prompt||'')+' '+(x.answer||'')+' '+(x.fact||'')+' '+(x.tags||[]).join(' ')+' '+(x.notes||'')+' '+(x.media||'')).toLowerCase().includes(qs))).sort((a,c)=>(c.createdAt||0)-(a.createdAt||0));
+  const sh=Object.values(S.sheets).filter(x=>matchCommon(x,b,U.s[x.id])&&(!qs||((x.name||'')+' '+(x.question||'')+' '+(x.tags||[]).join(' ')+' '+(x.items||[]).map(i=>(i.p||'')+' '+(i.a||'')).join(' ')).toLowerCase().includes(qs))).map(x=>({k:'s',x}));
+  const qq=Object.values(S.questions).filter(x=>matchCommon(x,b,U.q[x.id])&&(!qs||((x.prompt||'')+' '+(x.answer||'')+' '+(x.fact||'')+' '+(x.tags||[]).join(' ')+' '+(x.notes||'')+' '+(x.media||'')).toLowerCase().includes(qs))).map(x=>({k:'q',x}));
+  return sh.concat(qq).sort((a,c)=>(c.x.createdAt||0)-(a.x.createdAt||0));
 }
 function diffDots(d){ d=num(d)||0; return `<span class="diff" title="Moeilijkheid ${d||'?'} van 3">${[1,2,3].map(i=>`<i class="${i<=d?'f':''}"></i>`).join('')}</span>`; }
 function usageText(u,label){ if(!u||!u.length) return `<span class="use">${label||'Nog niet gebruikt'}</span>`; const l=u.map(x=>esc(x.name)+(x.date?' ('+esc(fmtDate(x.date,{day:'numeric',month:'short'}))+')':'')); return `<span class="use warn">Gebruikt: ${l.join(', ')}</span>`; }
 function viewBank(){
-  const b=ui.bank; const isBlad=b.kind==='blad'; const pool=isBlad?Object.values(S.sheets):Object.values(S.questions);
+  const b=ui.bank; const pool=Object.values(S.sheets).concat(Object.values(S.questions));
   const list=bankFiltered(); const U=usage();
   const tagCount={}; pool.forEach(x=>(x.tags||[]).forEach(t=>tagCount[t]=(tagCount[t]||0)+1));
   const tags=Object.entries(tagCount).sort((a,c)=>c[1]-a[1]||a[0].localeCompare(c[0])).slice(0,40);
   const typeCount={}; pool.forEach(x=>typeCount[x.typeId]=(typeCount[x.typeId]||0)+1);
-  const kindTypes=types().filter(t=>b.kind==='blad'?isSheet(t.id):!isSheet(t.id));
-  const items=isBlad?list.slice(0,b.limit).map(x=>{ const its=sheetItems(x);
+  const sheetRow=x=>{ const its=sheetItems(x);
       return `<article class="qrow"><div class="qrow-main"><div class="qrow-top">${typeChip(x.typeId)}${diffDots(x.diff)}<span class="chip">${its.length} ${isList(x.typeId)?(its.length===1?'antwoord':'antwoorden'):(its.length===1?'vraag':'vragen')}</span>${x.pdf?`<button class="chip c4" style="cursor:pointer;border:0" data-a="viewSheetPdf" data-id="${x.id}">${/pdf/.test(x.pdf.type||'')?'PDF':'Afbeelding'} tonen</button>`:''}${usageText(U.s[x.id],'Nog niet gespeeld')}</div>
         ${isList(x.typeId)?`<p class="qp big">${esc(x.question||x.name)}</p>`:`<p class="qp big">${esc(x.name)}</p>${x.question?`<p class="qa">${esc(x.question)}</p>`:''}`}
         <p class="qa"><span>Antwoorden</span>${esc(its.slice(0,5).map(i=>i.a).join(' · '))}${its.length>5?' …':''}</p>
         ${(x.tags||[]).length?`<div class="row" style="gap:6px">${x.tags.map(t=>`<button class="tag" data-a="bankTag" data-v="${esc(t)}">#${esc(t)}</button>`).join('')}</div>`:''}
-      </div><div class="qrow-act"><button class="btn btn-icon" aria-label="Bewerken" title="Bewerken" data-a="editSheet" data-id="${x.id}">${I.edit}</button><button class="btn btn-icon btn-danger" aria-label="Verwijderen" title="Verwijderen" data-a="askDelSheet" data-id="${x.id}">${I.del}</button></div></article>`; }).join('')
-    :list.slice(0,b.limit).map(x=>`<article class="qrow"><div class="qrow-main">
+      </div><div class="qrow-act"><button class="btn btn-icon" aria-label="Bewerken" title="Bewerken" data-a="editSheet" data-id="${x.id}">${I.edit}</button><button class="btn btn-icon btn-danger" aria-label="Verwijderen" title="Verwijderen" data-a="askDelSheet" data-id="${x.id}">${I.del}</button></div></article>`; };
+  const qRow=x=>`<article class="qrow"><div class="qrow-main">
       <div class="qrow-top">${typeChip(x.typeId)}${diffDots(x.diff)}${usageText(U.q[x.id])}</div>
       <p class="qp">${esc(x.prompt)}</p><p class="qa"><span>${esc(typeOf(x.typeId).answerLabel||'Antwoord')}</span>${esc(x.answer)}</p>${x.fact?`<p class="qf"><b>Feitje</b>${esc(x.fact)}</p>`:''}
       ${(x.tags||[]).length||x.media?`<div class="row" style="gap:6px">${(x.tags||[]).map(t=>`<button class="tag" data-a="bankTag" data-v="${esc(t)}">#${esc(t)}</button>`).join('')}${x.media?`<span class="small muted">· ${esc(x.media)}</span>`:''}</div>`:''}
-    </div><div class="qrow-act"><button class="btn btn-icon" aria-label="Bewerken" title="Bewerken" data-a="editQuestion" data-id="${x.id}">${I.edit}</button><button class="btn btn-icon btn-danger" aria-label="Verwijderen" title="Verwijderen" data-a="askDelQuestion" data-id="${x.id}">${I.del}</button></div></article>`).join('');
+    </div><div class="qrow-act"><button class="btn btn-icon" aria-label="Bewerken" title="Bewerken" data-a="editQuestion" data-id="${x.id}">${I.edit}</button><button class="btn btn-icon btn-danger" aria-label="Verwijderen" title="Verwijderen" data-a="askDelQuestion" data-id="${x.id}">${I.del}</button></div></article>`;
+  const items=list.slice(0,b.limit).map(o=>o.k==='s'?sheetRow(o.x):qRow(o.x)).join('');
+  const losType=b.type&&!isSheet(b.type), bladType=b.type&&isSheet(b.type);
   return `<div class="spread"><div><div class="eyebrow">Database</div><h1>Vragenbank</h1></div>
-    <div class="row"><button class="btn btn-primary" data-a="${isBlad?'newSheet':'newQuestion'}">${I.plus}${isBlad?'Nieuw vragenblad':'Nieuwe vraag'}</button><button class="btn" data-a="importQ">${I.up2}Importeren</button><button class="btn" data-a="exportCsv">${I.dl}CSV</button><button class="btn" data-a="backup">${I.dl}Back-up</button></div></div>
-  <div class="row"><div class="seg" role="group" aria-label="Soort"><button aria-pressed="${isBlad}" data-a="bankKind" data-v="blad">Vragenbladen <span class="num">${Object.keys(S.sheets).length}</span></button><button aria-pressed="${!isBlad}" data-a="bankKind" data-v="los">Losse vragen <span class="num">${Object.keys(S.questions).length}</span></button></div>
-    <span class="small muted">${isBlad?'Een vragenblad heeft een naam (bijv. Hoofdsteden of Voorhoofden) en kies je in één keer voor een ronde.':'Losse vragen kies je per stuk, zoals bij de Grabbelton.'}</span></div>
-  <div class="typestrip"><button class="chip ${!b.type?'sel':''}" data-a="bankType" data-v="">Alle <b class="num">&nbsp;${pool.length}</b></button>${kindTypes.map(t=>`<button class="chip c${(t.color??5)%6} ${b.type===t.id?'sel':''}" data-a="bankType" data-v="${t.id}">${esc(t.name)} <b class="num">&nbsp;${typeCount[t.id]||0}</b></button>`).join('')}</div>
-  <div class="filters"><label class="field fs"><span>Zoeken</span><input id="bank-q" type="search" data-ui="bank.q" value="${esc(b.q)}" placeholder="${isBlad?'Zoek op bladnaam, vraag of antwoord':'Zoek in vraag, antwoord of tags'}"></label>
+    <div class="row">${bladType?'':`<button class="btn btn-primary" data-a="newQuestion">${I.plus}Nieuwe Grabbelton-vraag</button>`}${losType?'':`<button class="btn ${bladType?'btn-primary':''}" data-a="newSheet">${I.plus}${b.type&&isList(b.type)?'Nieuwe lijstvraag':'Nieuw vragenblad'}</button>`}<button class="btn" data-a="importQ">${I.up2}Importeren</button><button class="btn" data-a="backup">${I.dl}Back-up</button></div></div>
+  <div class="typestrip"><button class="chip ${!b.type?'sel':''}" data-a="bankType" data-v="">Alle <b class="num">&nbsp;${pool.length}</b></button>${types().map(t=>`<button class="chip c${(t.color??5)%6} ${b.type===t.id?'sel':''}" data-a="bankType" data-v="${t.id}">${esc(t.name)} <b class="num">&nbsp;${typeCount[t.id]||0}</b></button>`).join('')}</div>
+  <div class="filters"><label class="field fs"><span>Zoeken</span><input id="bank-q" type="search" data-ui="bank.q" value="${esc(b.q)}" placeholder="Zoek in vraag, antwoord, bladnaam of tags"></label>
     <label class="field"><span>Moeilijkheid</span><select id="bank-diff" data-ui="bank.diff"><option value="">Alle</option><option value="1" ${b.diff==='1'?'selected':''}>Makkelijk</option><option value="2" ${b.diff==='2'?'selected':''}>Gemiddeld</option><option value="3" ${b.diff==='3'?'selected':''}>Moeilijk</option></select></label>
     <label class="field"><span>Gebruik</span><select id="bank-usage" data-ui="bank.usage"><option value="">Alles</option><option value="unused" ${b.usage==='unused'?'selected':''}>Nog niet gebruikt</option><option value="used" ${b.usage==='used'?'selected':''}>Al gebruikt</option></select></label>
     <div class="field"><span>&nbsp;</span><button class="btn" data-a="bankReset">Filters wissen</button></div></div>
   ${tags.length?`<div class="tagcloud">${tags.map(([t,c])=>`<button class="tag ${b.tag===t?'sel':''}" data-a="bankTag" data-v="${esc(t)}">#${esc(t)}<b>${c}</b></button>`).join('')}</div>`:''}
-  <p class="small muted">${list.length} ${isBlad?(list.length===1?'vragenblad':'vragenbladen'):(list.length===1?'vraag':'vragen')} gevonden</p>
+  <p class="small muted">${list.length} gevonden</p>
   <div class="qlist">${items}
   ${list.length>b.limit?`<button class="btn" data-a="bankMore" style="align-self:center">Toon meer (${list.length-b.limit})</button>`:''}
-  ${!pool.length?`<div class="card empty"><p>${isBlad?'Nog geen vragenbladen. Maak er een aan, bijvoorbeeld “Hoofdsteden” voor de AI-ronde, of plak een lijst uit Excel.':'Nog geen losse vragen. Voeg ze één voor één toe of plak een lijst uit Excel.'}</p><div class="row"><button class="btn btn-primary" data-a="${isBlad?'newSheet':'newQuestion'}">${I.plus}${isBlad?'Eerste vragenblad':'Eerste vraag'}</button>${!Object.keys(S.quizzes).length?'':''}</div></div>`:''}</div>`;
+  ${!pool.length?`<div class="card empty"><p>De vragenbank is nog leeg. Voeg een Grabbelton-vraag of een vragenblad toe, of plak een lijst uit Excel.</p></div>`:''}</div>`;
 }
 
 /* ----- types ----- */
@@ -932,8 +930,6 @@ function renderModal(){
       <label class="field"><span>Spelers</span><input id="m-tpl" type="number" min="1" data-m="players" value="${esc(d.players)}"></label>
       <label class="field"><span>Tafel</span><input id="m-ttb" type="number" min="0" data-m="table" value="${esc(d.table)}"></label>
       <label class="field"><span>Status</span><select id="m-tst" data-m="status">${['ingeschreven','wachtlijst','afgemeld'].map(s=>`<option ${d.status===s?'selected':''}>${s}</option>`).join('')}</select></label>
-      <label class="field"><span>Betaalwijze</span><select id="m-tpm" data-m="payMethod">${['','Tikkie vooraf','Contant aan de deur','Pin aan de deur','Factuur'].map(s=>`<option ${d.payMethod===s?'selected':''}>${s}</option>`).join('')}</select></label>
-      <label class="check"><input id="m-tpaid" type="checkbox" data-m="paid" ${d.paid?'checked':''}> Betaald</label>
       <label class="field wide"><span>Notities</span><input id="m-tno" type="text" data-m="notes" value="${esc(d.notes)}" placeholder="Komt later, wil vooraan zitten…"></label></div>`;
     ft=`<button class="btn" data-a="close">Annuleren</button><button class="btn btn-primary" data-a="saveTeam">Opslaan</button>`;
   } else if(m.kind==='picker'){
@@ -1349,7 +1345,9 @@ document.addEventListener('keydown',e=>{
   if(el.classList&&el.classList.contains('drag-h')&&(e.key==='ArrowUp'||e.key==='ArrowDown')){ e.preventDefault(); const q=curQuiz(); const id=el.dataset.rid; const i=q.rounds.findIndex(r=>r.id===id);
     if(moveRound(q,id,i+(e.key==='ArrowUp'?-1:1))){ render(); const h=document.querySelector(`.drag-h[data-rid="${id}"]`); if(h) h.focus(); } return; }
   if(e.key==='Enter'&&el.classList&&el.classList.contains('score-in')){ e.preventDefault(); const r=+el.dataset.row+(e.shiftKey?-1:1), c=+el.dataset.col;
-    const nx=document.querySelector(`.score-in[data-row="${r}"][data-col="${c}"]`)||document.querySelector(`.score-in[data-row="0"][data-col="${c+1}"]`); if(nx){ nx.focus(); nx.select(); } }
+    const nx=document.querySelector(`.score-in[data-row="${r}"][data-col="${c}"]`)||document.querySelector(`.score-in[data-row="0"][data-col="${c+1}"]`);
+    if(nx){ const nid=nx.id; nx.focus(); try{ nx.select(); }catch(x){}
+      setTimeout(()=>{ const n2=document.getElementById(nid); if(n2&&document.activeElement!==n2){ n2.focus(); try{ n2.select(); }catch(x){} } },0); } }
 });
 let toastT=null;
 function toast(msg,kind){ const t=$('#toast'); t.textContent=msg; t.className=kind||''; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>{t.hidden=true;},3200); }
